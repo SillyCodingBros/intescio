@@ -7,7 +7,7 @@ handles.dummy = 0;
 //Images
 handles.image1= newaxes();handles.image1.margins = [ 0 0 0 0];handles.image1.axes_bounds = [0.0195473,0.0218978,0.4526749,0.4361314];handles.image1.auto_clear = 'on';
 handles.image2= newaxes();handles.image2.margins = [ 0 0 0 0];handles.image2.axes_bounds = [0.5295473,0.020073,0.4526749,0.4361314];handles.image2.auto_clear = 'on';
-handles.resultImage= newaxes();handles.resultImage.margins = [ 0 0 0 0];handles.resultImage.axes_bounds = [0.2785185,0.530073,0.4526749,0.4361314];
+handles.resultImage= newaxes();handles.resultImage.margins = [ 0 0 0 0];handles.resultImage.axes_bounds = [0.2785185,0.530073,0.4526749,0.4361314];handles.resultImage.auto_clear = 'on';
 handles.hasImage1 = %F;
 handles.hasImage2 = %F;
 
@@ -24,6 +24,7 @@ handles.LSBUsedSpin=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1]
 // Action Buttons
 handles.hideDataButton=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','off','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.0444216,0.0511354,0.1863753,0.069869],'Relief','default','SliderStep',[0.01,0.1],'String','Hide It!','Style','pushbutton','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','hideDataButton','Callback','hideDataButton_callback(handles)')
 handles.saveResultButton=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','off','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.7860668,0.209607,0.1773779,0.0742358],'Relief','default','SliderStep',[0.01,0.1],'String','Save It!','Style','pushbutton','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','saveResultButton','Callback','saveResultButton_callback(handles)')
+handles.goHome=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.7821811,0.0182482,0.186214,0.1423358],'Relief','default','SliderStep',[0.01,0.1],'String','*̡̡ ̴̡ı̴̴̡ ̡̡͡|̲̲̲͡͡͡ ̲▫̲͡ ̲̲̲͡͡π̲̲͡͡ ̲̲͡▫̲̲͡͡ ̲|̡̡̡ ̡ ̴̡ı̴̡̡ ̡͌l̡̡̡̡.___','Style','pushbutton','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','goHome','Callback','goHome_callback(handles)')
 
 
 f.visible = "on";
@@ -94,6 +95,23 @@ endfunction
 
 function saveResultButton_callback(handles)
 //Write your callback for  saveResultButton  here
+
+endfunction
+
+
+function goHome_callback(handles)
+//Write your callback for  goHome  here
+
+//Reset Variables
+handles.hasImage1 = %F;
+handles.hasImage2 = %F;
+handles.hideDataButton.Enable = 'off';
+handles.imageRedundancySpin.Enable = 'off';
+handles.imageRedundancySpin.Value = [1];
+handles.LSBUsedSpin.Enable = 'off';
+handles.LSBUsedSpin.Value = [4];
+
+//changing to home GUI
 
 endfunction
 
