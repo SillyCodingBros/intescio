@@ -2,7 +2,7 @@
 //    newBit = bit1 - modulo(bit1,2^nbLSB) + floor(bit2/2^nbLSB)
 //endfunction
 
-function findImage(imageHost,nbLSB,nbImage)
+function[resultImage] = findImage(imageHost,nbLSB,nbImage)
     heightHost = size(imageHost,1);
     widthHost = size(imageHost,2);
 
@@ -27,7 +27,7 @@ function findImage(imageHost,nbLSB,nbImage)
 
     for y=1 : heightHost
         tmp_percent = floor(y*100/heightHost);
-        if ~(tmp_percent == percent) then
+        if ~(tmp_percent == percent) && modulo(tmp_percent, 10) == 0 then
             percent = tmp_percent;
            printf("%d percent\n", percent);
         end
@@ -73,9 +73,15 @@ function findImage(imageHost,nbLSB,nbImage)
                 if ~isCurrentHide && bitget(imageHost(y,x,1), 1) == bitHide then
                     indexRGB = indexRGB + 1;
                     for lsb=2 : nbLSB
-                       listRedHideImage(indexRGB) = list(bitget(imageHost(y,x,1), lsb));
-                       listGreenHideImage(indexRGB) = list(bitget(imageHost(y,x,2), lsb));
-                       listBlueHideImage(indexRGB) = list(bitget(imageHost(y,x,3), lsb));
+                        if lsb==2 then
+                           listRedHideImage(indexRGB) = list(bitget(imageHost(y,x,1), lsb));
+                           listGreenHideImage(indexRGB) = list(bitget(imageHost(y,x,2), lsb));
+                           listBlueHideImage(indexRGB) = list(bitget(imageHost(y,x,3), lsb));
+                        else
+                           listRedHideImage(indexRGB)($+1) = bitget(imageHost(y,x,1), lsb);
+                           listGreenHideImage(indexRGB)($+1) = bitget(imageHost(y,x,2), lsb);
+                           listBlueHideImage(indexRGB)($+1) = bitget(imageHost(y,x,3), lsb);
+                        end
                     end
                     isCurrentHeader = %f;
                     isCurrentHide = %t;
@@ -171,8 +177,104 @@ function findImage(imageHost,nbLSB,nbImage)
     //disp(hideHeight,"y",hideWidth)
     printf("%dx%d\n", hideHeight, hideWidth);
 
-
     // Comp Image Layer & Add to result image
+    percent = 0;
+    tmp_percent = 0;
+
+    pix2get = hideHeight * hideWidth;
+    one = 0;
+    zero = 0;
+    hidePix = 0;
+
+    for y=1 : hideHeight
+        tmp_percent = floor(y*100/hideHeight);
+        if ~(tmp_percent == percent) && modulo(tmp_percent, 10) == 0 then
+            percent = tmp_percent;
+           printf("%d percent\n", percent);
+        end
+        printf("%d/%d\n", y, hideHeight);
+        for  x=1 : hideWidth
+           for nbIter=1 : size(listRedHideImage)
+                for c=1 : size(listRedHideImage(nbIter))
+                   if c > pix2get then
+                       break;
+                   end
+                   if modulo(c, (nbLSB-1)) == 0 then
+                       hidePix = 0;
+                   end
+                   if listRedHideImage(nbIter)(c) == 1 then
+                      one = one + 1;
+                   else
+                      zero = zero + 1;
+                   end
+                end
+                if one > zero then
+                    pos = 8-modulo(c, (nbLSB-1));
+                    if pos == 8 then
+                       pos = 5
+                    end
+                   hidePix = hidePix + 2^(pos);
+                end
+                one = 0;
+                zero = 0;
+           end
+           resultImage(y,x,1) = hidePix;
+           one = 0;
+           zero = 0;
+           for nbIter=1 : size(listGreenHideImage)
+                for c=1 : size(listGreenHideImage(nbIter))
+                   if c > pix2get then
+                       break;
+                   end
+                   if modulo(c, (nbLSB-1)) == 0 then
+                       hidePix = 0;
+                   end
+                   if listGreenHideImage(nbIter)(c) == 1 then
+                      one = one + 1;
+                   else
+                      zero = zero + 1;
+                   end
+                end
+                if one > zero then
+                    pos = 8-modulo(c, (nbLSB-1));
+                    if pos == 8 then
+                       pos = 5
+                    end
+                   hidePix = hidePix + 2^(pos);
+                end
+                one = 0;
+                zero = 0;
+           end
+           resultImage(y,x,2) = hidePix;
+           one = 0;
+           zero = 0;
+           for nbIter=1 : size(listBlueHideImage)
+                for c=1 : size(listBlueHideImage(nbIter))
+                   if c > pix2get then
+                       break;
+                   end
+                   if modulo(c, (nbLSB-1)) == 0 then
+                       hidePix = 0;
+                   end
+                   if listBlueHideImage(nbIter)(c) == 1 then
+                      one = one + 1;
+                   else
+                      zero = zero + 1;
+                   end
+                end
+                if one > zero then
+                    pos = 8-modulo(c, (nbLSB-1));
+                    if pos == 8 then
+                       pos = 5
+                    end
+                   hidePix = hidePix + 2^(pos);
+                end
+                one = 0;
+                zero = 0;
+           end
+           resultImage(y,x,3) = hidePix;
+        end
+    end
 
     //resultImage = imresize(imageHost,sqrt(sizeHide*(widthHide/heightHide))/widthHide);
     //resultImage = imageHide;
