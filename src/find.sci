@@ -77,6 +77,9 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
                            listRedHideImage(indexRGB) = list(bitget(imageHost(y,x,1), lsb));
                            listGreenHideImage(indexRGB) = list(bitget(imageHost(y,x,2), lsb));
                            listBlueHideImage(indexRGB) = list(bitget(imageHost(y,x,3), lsb));
+                           if indexRGB==1 then
+                              printf("first bit: %d\n", bitget(imageHost(y,x,1), lsb))
+                           end
                         else
                            listRedHideImage(indexRGB)($+1) = bitget(imageHost(y,x,1), lsb);
                            listGreenHideImage(indexRGB)($+1) = bitget(imageHost(y,x,2), lsb);
@@ -211,9 +214,9 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
                    if  c > size(listRedHideImage(nbIter)) then
                        break;
                    end
-                   if modulo(c, (nbLSB-1)) == 0 then
-                       hidePix = 0;
-                   end
+                   //if modulo(c-1, (nbLSB-1)) == 0 then
+                    //   hidePix = 0;
+                  // end
                    if listRedHideImage(nbIter)(c) == 1 then
                       one = one + 1;
                    else
@@ -225,7 +228,11 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
                     if pos == 8 then
                        pos = 5
                     end
-                   hidePix = hidePix + 2^(pos);
+                   hidePix = hidePix + (2^(pos));
+                   if c == 1 || c==2 || c==3 then
+                      printf("hidePix: %d pos: %d value: %d", hidePix, pos, (2^(pos)))
+                      disp(hidePix)
+                   end
                 end
                 one = 0;
                 zero = 0;
@@ -241,9 +248,9 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
                    if (c > pix2get*(nbLSB-1)) || (c > size(listGreenHideImage(nbIter))) then
                        break;
                    end
-                   if modulo(c, (nbLSB-1)) == 0 then
-                       hidePix = 0;
-                   end
+                   //if modulo(c-1, (nbLSB-1)) == 0 then
+                    //   hidePix = 0;
+                   //end
                    if listGreenHideImage(nbIter)(c) == 1 then
                       one = one + 1;
                    else
@@ -270,9 +277,9 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
                    if (c > pix2get*(nbLSB-1)) || (c > size(listBlueHideImage(nbIter))) then
                        break;
                    end
-                   if modulo(c, (nbLSB-1)) == 0 then
-                       hidePix = 0;
-                   end
+                   //if modulo(c-1, (nbLSB-1)) == 0 then
+                    //   hidePix = 0;
+                  // end
                    if listBlueHideImage(nbIter)(c) == 1 then
                       one = one + 1;
                    else
@@ -301,6 +308,21 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
     printf("listGreenHideImage size : %d\n", size(listGreenHideImage(1)))
     printf("listBlueHideImage size : %d\n", size(listBlueHideImage(1)))
 
+    tmp = 0;
+    tmp2 = 0;
+    for x=1 : size(listRedHideImage(1))
+       printf("%d", listRedHideImage(1)(x))
+       if modulo(x, 3) == 0 then
+          printf(" ")
+          tmp = tmp + 1;
+       end
+       if modulo(tmp, 16) == 0 && ~(tmp == tmp2) then
+          printf("\n")
+          tmp2 = tmp;
+       end
+    end
+
+    //disp(listRedHideImage(1))
     //resultImage = imresize(imageHost,sqrt(sizeHide*(widthHide/heightHide))/widthHide);
     //resultImage = imageHide;
 
