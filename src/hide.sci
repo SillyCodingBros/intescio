@@ -15,11 +15,6 @@ function[resultImage] = hideImage(imageHost,imageHide,nbLSB,nbImage)
 
     coef = ceil(sqrt(sizeHide*(widthHost/heightHost)))/widthHost
 
-    //printf("size hide = %d\n",sizeHide)
-    //printf("size new host = %d\n",ceil(sqrt(sizeHide*(widthHost/heightHost))))
-    //printf("size host %d\n", widthHost)
-    printf("coeff = %f\n",coef)
-
     if coef < 1 then
        coef = 1
     end
@@ -31,19 +26,12 @@ function[resultImage] = hideImage(imageHost,imageHide,nbLSB,nbImage)
         printf("y=%d/%d\n",y,heightResultImage)
         for x=1 : widthResultImage
             for bit=1 : nbLSB
-                //printf("y=%d/%d x=%d/%d bit=%d\n",y,heightResultImage,x,widthResultImage,bit)
                 if isHeader then
-                    //printf("in header index = %d/32\n",bitHeader)
                     if bit == 1 || nbImage <= 0 then
-                        //printf("delimiteur\n")
                         for layer=1 : size(resultImage,3)
-                            //printf("old bit = %d ",bitget(resultImage(y,x,layer),bit))
-                            //printf("replace bit = 1 ")
                             resultImage(y,x,layer) = bitset(resultImage(y,x,layer),bit,1)
-                            //printf("new bit = %d\n",bitget(resultImage(y,x,layer),bit))
                         end
                     else
-                        //printf("header\n")
                         if ~isHeader then
                             for layer=1 : size(resultImage,3)
                                 resultImage(y,x,layer) = bitset(resultImage(y,x,layer),bit,0)
@@ -59,22 +47,15 @@ function[resultImage] = hideImage(imageHost,imageHide,nbLSB,nbImage)
                         end
                     end
                 else
-                    //printf("in image index = %d/%d\n",indexImageHide,widthHide*heightHide)
                     if bit == 1 then
-                        //printf("delimiteur\n")
                         for layer=1 : size(resultImage,3)
-                            //printf("old bit = %d ",bitget(resultImage(y,x,layer),bit))
-                            //printf("replace bit = 0 ")
                             resultImage(y,x,layer) = bitset(resultImage(y,x,layer),bit,0)
-                            //printf("new bit = %d\n",bitget(resultImage(y,x,layer),bit))
                         end
                     else
-                        //printf("image\n")
                         for layer=1 : size(resultImage,3)
-                            //printf("old bit = %d ",bitget(resultImage(y,x,layer),bit))
-                            //printf("replace bit = %d ",bitget(imageHide(ceil(indexImageHide/widthHide),modulo(indexImageHide-1,widthHide)+1,layer),9-bit))
-                            resultImage(y,x,layer) = bitset(resultImage(y,x,layer),bit,bitget(imageHide(ceil(indexImageHide/widthHide),modulo(indexImageHide-1,widthHide)+1,layer),9-bit))
-                            //printf("new bit = %d\n",bitget(resultImage(y,x,layer),bit))
+                            if layer <= size(imageHide,3) then
+                                resultImage(y,x,layer) = bitset(resultImage(y,x,layer),bit,bitget(imageHide(ceil(indexImageHide/widthHide),modulo(indexImageHide-1,widthHide)+1,layer),9-bit))
+                            end
                         end
                     end
                 end
@@ -83,14 +64,7 @@ function[resultImage] = hideImage(imageHost,imageHide,nbLSB,nbImage)
                 indexImageHide = indexImageHide+1
                 if indexImageHide > widthHide*heightHide then
                     indexImageHide = 1
-                    //printf("new image\n")
                     nbImage = nbImage - 1
-                    /*
-                    if nbImage <= 0 then
-                        //printf("fin\n")
-                       return
-                    end
-                    */
                     isHeader = %t
                 end
             end
