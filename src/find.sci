@@ -17,8 +17,8 @@ function findImage(imageHost,nbLSB,nbImage)
 
     indexHeader = 0;
     indexRGB = 0;
-    isCurrentHeader = 0;
-    isCurrentHide = 0;
+    isCurrentHeader = %f;
+    isCurrentHide = %f;
 
     //printf("size host %d\n", widthHide);
 
@@ -26,36 +26,40 @@ function findImage(imageHost,nbLSB,nbImage)
         printf("%d/%d\n", y, heightHost);
         for x=1 : widthHost
             //disp("test2 ", isCurrentHeader==1, bitget(imageHost(x,y,1),1) == bitHeader)
-            if isCurrentHeader==1 && bitget(imageHost(x,y,1),1) == bitHeader then
+            if isCurrentHeader && bitget(imageHost(x,y,1), 1) == bitHeader then
                 //disp("test3")
-                for lsb=1 : nbLSB
-                   listHeadersHeight(indexHeader)($+1) =  bitget(imageHost(x,y,1),lsb);
-                   listHeadersWidth(indexHeader)($+1) =  bitget(imageHost(x,y,2),lsb);
+                for lsb=2 : nbLSB
+                   listHeadersHeight(indexHeader)($+1) =  bitget(imageHost(x,y,1), lsb);
+                   listHeadersWidth(indexHeader)($+1) =  bitget(imageHost(x,y,2), lsb);
                 end
             else
-                if isCurrentHeader==0 && bitget(imageHost(x,y,1),1) == bitHeader then
+                if ~isCurrentHeader && bitget(imageHost(x,y,1), 1) == bitHeader then
                     indexHeader = indexHeader + 1;
-                    for lsb=1 : nbLSB
+                    for lsb=2 : nbLSB
                        listHeadersHeight(indexHeader) =  list(bitget(imageHost(x,y,1), lsb));
                        listHeadersWidth(indexHeader) = list(bitget(imageHost(x,y,2), lsb));
                     end
-                    isCurrentHeader = 1;
-                    isCurrentHide = 0;
+                    isCurrentHeader = %t;
+                    isCurrentHide = %f;
                 end
             end
 
-            if isCurrentHide==1 && bitget(imageHost(x,y,1),1) == bitHide then
-                listRedHideImage(indexRGB)($+1) = bitget(imageHost(x,y,1),1);
-                listGreenHideImage(indexRGB)($+1) = bitget(imageHost(x,y,2),1);
-                listBlueHideImage(indexRGB)($+1) = bitget(imageHost(x,y,3),1);
+            if isCurrentHide && bitget(imageHost(x,y,1), 1) == bitHide then
+                for lsb=2 : nbLSB
+                   listRedHideImage(indexRGB)($+1) = bitget(imageHost(x,y,1), lsb);
+                   listGreenHideImage(indexRGB)($+1) = bitget(imageHost(x,y,2), lsb);
+                   listBlueHideImage(indexRGB)($+1) = bitget(imageHost(x,y,3), lsb);
+                end
             else
-                if isCurrentHide==0 && bitget(imageHost(x,y,1),1) == bitHide then
+                if ~isCurrentHide && bitget(imageHost(x,y,1), 1) == bitHide then
                     indexRGB = indexRGB + 1;
-                    listRedHideImage(indexRGB) = list(bitget(imageHost(x,y,1),1));
-                    listGreenHideImage(indexRGB) = list(bitget(imageHost(x,y,2),1));
-                    listBlueHideImage(indexRGB) = list(bitget(imageHost(x,y,3),1));
-                    isCurrentHeader = 0;
-                    isCurrentHide = 1;
+                    for lsb=2 : nbLSB
+                       listRedHideImage(indexRGB) = list(bitget(imageHost(x,y,1), lsb));
+                       listGreenHideImage(indexRGB) = list(bitget(imageHost(x,y,2), lsb));
+                       listBlueHideImage(indexRGB) = list(bitget(imageHost(x,y,3), lsb));
+                    end
+                    isCurrentHeader = %f;
+                    isCurrentHide = %t;
                 end
             end
         end
@@ -65,30 +69,39 @@ function findImage(imageHost,nbLSB,nbImage)
     hideHeight = uint32(0);
     one = 0;
     zero = 0;
-    endIt = 0;
+    endIt = %f;
 
-    disp(listHeadersHeight)
-    for it=1 : heightHost
-        if endIt == 1 then
-           break;
-        end
+    disp(size(listHeadersHeight))
+    disp(size(listHeadersWidth))
+
+    octSize = ceil(32/(nbLSB-1)) * (nbLSB-1);
+    disp(octSize);
+
+    for it=1 : 32
         for h=1 : size(listHeadersHeight)
-            if it > size(listHeadersHeight(h)) then
-                endIt = 1;
+            if ~(octSize == size(listHeadersHeight(h))) then
+                endIt = %t;
                 break;
             end
+            disp(size(listHeadersWidth(h)));
             if listHeadersHeight(h)(it) == 0 then
               zero = zero + 1;
             else
               one = one + 1;
             end
         end
+        if endIt then
+            endIt = %f;
+            one = 0;
+            zero = 0;
+            break;
+        end
         if one > zero then
             disp("1")
-            bitset(hideHeight, it, 1);
+            hideHeight = bitset(hideHeight, it, 1);
         else
             disp("0")
-            bitset(hideHeight, it, 0);
+            //hideHeight = bitset(hideHeight, it, 0);
         end
         one = 0;
         zero = 0;
@@ -97,15 +110,11 @@ function findImage(imageHost,nbLSB,nbImage)
     hideWidth = uint32(0);
     one = 0;
     zero = 0;
-    endIt = 0;
+    endIt = %f;
 
-    for it=1 : widthHost
-        if endIt == 1 then
-           break;
-        end
+    for it=1 : 32
         for h=1 : size(listHeadersWidth)
-            if it > size(listHeadersWidth(h)) then
-                endIt = 1;
+            if ~(octSize == size(listHeadersWidth(h))) then
                 break;
             end
             if listHeadersWidth(h)(it) == 0 then
@@ -114,10 +123,18 @@ function findImage(imageHost,nbLSB,nbImage)
               one = one + 1;
             end
         end
+        if endIt then
+            endIt = %f;
+            one = 0;
+            zero = 0;
+            break;
+        end
         if one > zero then
-            bitset(hideWidth, it, 1);
+            hideWidth = bitset(hideWidth, it, 1);
+            disp("1")
         else
-            bitset(hideWidth, it, 0);
+            //hideWidth = bitset(hideWidth, it, 0);
+            disp("0")
         end
         one = 0;
         zero = 0;
