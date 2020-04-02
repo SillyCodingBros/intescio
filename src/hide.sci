@@ -34,7 +34,7 @@ function[resultImage] = hideImage(imageHost,imageHide,nbLSB,nbImage)
                 //printf("y=%d/%d x=%d/%d bit=%d\n",y,heightResultImage,x,widthResultImage,bit)
                 if isHeader then
                     //printf("in header index = %d/32\n",bitHeader)
-                    if bit == 1 then
+                    if bit == 1 || nbImage <= 0 then
                         //printf("delimiteur\n")
                         for layer=1 : size(resultImage,3)
                             //printf("old bit = %d ",bitget(resultImage(y,x,layer),bit))
@@ -44,12 +44,18 @@ function[resultImage] = hideImage(imageHost,imageHide,nbLSB,nbImage)
                         end
                     else
                         //printf("header\n")
-                        resultImage(y,x,1) = bitset(resultImage(y,x,1),bit,bitget(heightHide,bitHeader))
-                        resultImage(y,x,2) = bitset(resultImage(y,x,2),bit,bitget(widthHide,bitHeader))
-                        bitHeader = bitHeader+1
-                        if bitHeader > 32 then
-                            bitHeader = 1
-                            isHeader = %f
+                        if ~isHeader then
+                            for layer=1 : size(resultImage,3)
+                                resultImage(y,x,layer) = bitset(resultImage(y,x,layer),bit,0)
+                            end
+                        else
+                            resultImage(y,x,1) = bitset(resultImage(y,x,1),bit,bitget(heightHide,33-bitHeader))
+                            resultImage(y,x,2) = bitset(resultImage(y,x,2),bit,bitget(widthHide,33-bitHeader))
+                            bitHeader = bitHeader+1
+                            if bitHeader > 32 then
+                                bitHeader = 1
+                                isHeader = %f
+                            end
                         end
                     end
                 else
@@ -79,10 +85,12 @@ function[resultImage] = hideImage(imageHost,imageHide,nbLSB,nbImage)
                     indexImageHide = 1
                     //printf("new image\n")
                     nbImage = nbImage - 1
+                    /*
                     if nbImage <= 0 then
                         //printf("fin\n")
                        return
                     end
+                    */
                     isHeader = %t
                 end
             end
