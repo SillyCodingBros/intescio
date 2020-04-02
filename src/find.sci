@@ -29,7 +29,7 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
         tmp_percent = floor(y*100/heightHost);
         if ~(tmp_percent == percent) && modulo(tmp_percent, 10) == 0 then
             percent = tmp_percent;
-           printf("%d percent\n", percent);
+           printf("Finding Data: %d percent\n", percent);
         end
         for x=1 : widthHost
             //disp("test2 ", isCurrentHeader==1, bitget(imageHost(y,x,1),1) == bitHeader)
@@ -186,17 +186,29 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
     zero = 0;
     hidePix = 0;
 
+    //disp(listRedHideImage)
+    //disp('\n');
+    //disp(listGreenHideImage)
+    //disp('\n');
+    //disp(listBlueHideImage)
+    //disp('\n');
+
     for y=1 : hideHeight
         tmp_percent = floor(y*100/hideHeight);
         if ~(tmp_percent == percent) && modulo(tmp_percent, 10) == 0 then
             percent = tmp_percent;
-           printf("%d percent\n", percent);
+           printf("Rebuilding Image: %d percent\n", percent);
         end
-        printf("%d/%d\n", y, hideHeight);
+        //printf("%d/%d\n", y, hideHeight);
         for  x=1 : hideWidth
-           for nbIter=1 : size(listRedHideImage)
-                for c=1 : size(listRedHideImage(nbIter))
-                   if c > pix2get then
+           for c=(((x + (hideWidth * (y - 1))))*(nbLSB-1)) - (nbLSB-2) : ((x + (hideWidth * (y - 1))))*(nbLSB-1)
+           //c=(x + (hideWidth * (y - 1)))
+                if (c > pix2get*(nbLSB-1)) then
+                   break;
+                end
+               //disp(c)
+                for nbIter=1 : size(listRedHideImage)
+                   if  c > size(listRedHideImage(nbIter)) then
                        break;
                    end
                    if modulo(c, (nbLSB-1)) == 0 then
@@ -218,12 +230,15 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
                 one = 0;
                 zero = 0;
            end
+           //disp("\n");
            resultImage(y,x,1) = hidePix;
            one = 0;
            zero = 0;
-           for nbIter=1 : size(listGreenHideImage)
-                for c=1 : size(listGreenHideImage(nbIter))
-                   if c > pix2get then
+           hidePix = 0;
+           for c=(((x + (hideWidth * (y - 1))))*(nbLSB-1)) - (nbLSB-2) : ((x + (hideWidth * (y - 1))))*(nbLSB-1)
+          // c=(x + (hideWidth * (y - 1)))
+                for nbIter=1 : size(listGreenHideImage)
+                   if (c > pix2get*(nbLSB-1)) || (c > size(listGreenHideImage(nbIter))) then
                        break;
                    end
                    if modulo(c, (nbLSB-1)) == 0 then
@@ -246,11 +261,13 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
                 zero = 0;
            end
            resultImage(y,x,2) = hidePix;
+           hidePix = 0;
            one = 0;
            zero = 0;
-           for nbIter=1 : size(listBlueHideImage)
-                for c=1 : size(listBlueHideImage(nbIter))
-                   if c > pix2get then
+           for c=(((x + (hideWidth * (y - 1))))*(nbLSB-1)) - (nbLSB-2) : ((x + (hideWidth * (y - 1))))*(nbLSB-1)
+           //c=(x + (hideWidth * (y - 1)))
+                for nbIter=1 : size(listBlueHideImage)
+                   if (c > pix2get*(nbLSB-1)) || (c > size(listBlueHideImage(nbIter))) then
                        break;
                    end
                    if modulo(c, (nbLSB-1)) == 0 then
@@ -273,8 +290,16 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
                 zero = 0;
            end
            resultImage(y,x,3) = hidePix;
+           hidePix = 0;
+           one = 0;
+           zero = 0;
         end
     end
+
+    printf("pix2get : %d\n", pix2get)
+    printf("listRedHideImage size : %d\n", size(listRedHideImage(1)))
+    printf("listGreenHideImage size : %d\n", size(listGreenHideImage(1)))
+    printf("listBlueHideImage size : %d\n", size(listBlueHideImage(1)))
 
     //resultImage = imresize(imageHost,sqrt(sizeHide*(widthHide/heightHide))/widthHide);
     //resultImage = imageHide;

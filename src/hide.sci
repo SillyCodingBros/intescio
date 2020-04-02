@@ -15,6 +15,9 @@ function[resultImage] = hideImage(imageHost,imageHide,nbLSB,nbImage)
 
     coef = ceil(sqrt(sizeHide*(widthHost/heightHost)))/widthHost
 
+    percent = 0;
+    tmp_percent = 0;
+
     if coef < 1 then
        coef = 1
     end
@@ -23,7 +26,12 @@ function[resultImage] = hideImage(imageHost,imageHide,nbLSB,nbImage)
     widthResultImage = size(resultImage,2)
 
     for y=1 : heightResultImage
-        printf("y=%d/%d\n",y,heightResultImage)
+        tmp_percent = floor(y*100/heightResultImage);
+        if ~(tmp_percent == percent) && modulo(tmp_percent, 10) == 0 then
+            percent = tmp_percent;
+           printf("Hiding Data: %d percent\n", percent);
+        end
+        //printf("y=%d/%d\n",y,heightResultImage)
         for x=1 : widthResultImage
             for bit=1 : nbLSB
                 if isHeader then
