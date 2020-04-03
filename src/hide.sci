@@ -1,80 +1,72 @@
-function[resultImage] = hideImage(imageHost,imageHide,nbLSB,nbImage)
-    heightHost = size(imageHost,1)
-    widthHost = size(imageHost,2)
+function imageResult = hideImage(imageHost,imageHide,nbLSB,nbImage)
 
-    heightHide = size(imageHide,1)
-    widthHide = size(imageHide,2)
+    heightImageHide = size(imageHide,1);
+    widthImageHide = size(imageHide,2);
+    layerImageHide = size(imageHide,3);
 
-    header = [uint32(widthHide),uint32(heightHide)]
+    heightImageHost = size(imageHost,1);
+    widthImageHost = size(imageHost,2);
+    layerImageHost = size(imageHost,3);
 
-    sizeHide = (heightHide*widthHide+ceil(32/(nbLSB-1)))*nbImage
+    coef = ceil(sqrt(((heightImageHide*widthImageHide+ceil(32/(nbLSB-1)))*nbImage)*(widthImageHost/heightImageHost)))/widthImageHost;
+    if coef < 1 then
+       coef = 1;
+    end
+
+    imageResult = imresize(imageHost,coef);
+
+    heightImageResult = size(imageResult,1);
+    widthImageResult = size(imageResult,2);
+    layerImageResult = size(imageResult,3);
 
     isHeader = %t
     bitHeader = 1
     indexImageHide = 1
 
-    coef = ceil(sqrt(sizeHide*(widthHost/heightHost)))/widthHost
-
     percent = 0;
     tmp_percent = 0;
-    
+
     // Waitbar
     bar = waitbar(percent/100, "Hiding Data...");
 
-    if coef < 1 then
-       coef = 1
-    end
-    resultImage = imresize(imageHost,coef)
-    heightResultImage = size(resultImage,1)
-    widthResultImage = size(resultImage,2)
-
-    for y=1 : heightResultImage
+    for y=1 : heightImageResult
         tmp_percent = floor(y*100/heightResultImage);
         waitbar(tmp_percent/100, "Hiding Data...", bar);
         if ~(tmp_percent == percent) && modulo(tmp_percent, 10) == 0 then
             percent = tmp_percent;
-           printf("Hiding Data: %d percent\n", percent);           
+           printf("Hiding Data: %d percent\n", percent);
         end
-        //printf("y=%d/%d\n",y,heightResultImage)
-        for x=1 : widthResultImage
-            for bit=1 : nbLSB
+
+        for x=1 : widthImageResult
+            if isHeader then
+                for layer=1 : layerImageResult
+                    imageResult(y,x,layer) = setbit(imageResult(y,x,layer),1,1)
+                end
+            else
+                for layer=1 : layerImageResult
+                    imageResult(y,x,layer) = setbit(imageResult(y,x,layer),1,0)
+                end
+            end
+            for bit=2 : nbLSB
                 if isHeader then
-                    if bit == 1 || nbImage <= 0 then
-                        for layer=1 : size(resultImage,3)
-                            resultImage(y,x,layer) = bitset(resultImage(y,x,layer),bit,1)
-                        end
-                    else
-                        if ~isHeader then
-                            for layer=1 : size(resultImage,3)
-                                resultImage(y,x,layer) = bitset(resultImage(y,x,layer),bit,0)
-                            end
-                        else
-                            resultImage(y,x,1) = bitset(resultImage(y,x,1),bit,bitget(heightHide,33-bitHeader))
-                            resultImage(y,x,2) = bitset(resultImage(y,x,2),bit,bitget(widthHide,33-bitHeader))
-                            bitHeader = bitHeader+1
-                            if bitHeader > 32 then
-                                bitHeader = 1
-                                isHeader = %f
-                            end
-                        end
+                    imageResult(y,x,1) = setbit(imageResult(y,x,1),bit,bitget(heightImageHide,33-bitHeader))
+                    imageResult(y,x,2) = setbit(imageResult(y,x,2),bit,bitget(widthImageHide,33-bitHeader))
+                    bitHeader = bitHeader+1
+                    if bitHeader > 32 then
+                        bitHeader = 1
+                        isHeader = %f
                     end
                 else
-                    if bit == 1 then
-                        for layer=1 : size(resultImage,3)
-                            resultImage(y,x,layer) = bitset(resultImage(y,x,layer),bit,0)
-                        end
-                    else
-                        for layer=1 : size(resultImage,3)
-                            if layer <= size(imageHide,3) then
-                                resultImage(y,x,layer) = bitset(resultImage(y,x,layer),bit,bitget(imageHide(ceil(indexImageHide/widthHide),modulo(indexImageHide-1,widthHide)+1,layer),9-bit))
-                            end
+                    for layer=1 : layerImageResult
+                        if layer <= size(imageHide,3) then
+                            imageResult(y,x,layer) = setbit(imageResult(y,x,layer),bit,bitget(imageHide(ceil(indexImageHide/widthImageHide),modulo(indexImageHide-1,widthImageHide)+1,layer),10-bit))
                         end
                     end
                 end
             end
             if ~isHeader then
                 indexImageHide = indexImageHide+1
-                if indexImageHide > widthHide*heightHide then
+                if indexImageHide > widthImageHide*heightImageHide then
                     indexImageHide = 1
                     nbImage = nbImage - 1
                     isHeader = %t
@@ -82,5 +74,55 @@ function[resultImage] = hideImage(imageHost,imageHide,nbLSB,nbImage)
             end
         end
     end
+
     close(bar);
+
+endfunction
+
+function newVal = setbit(source,pos,value)
+    newVal = (source - modulo(source,uint8(2^(pos-value)))) + modulo(source,uint8(2^(pos-1)))
+endfunction
+
+function debugImage = testFindRes(image,nbClear)
+    height = size(image,1);
+    width = size(image,2);
+    layer = size(image,3);
+
+    for l=1 : layer
+        for y=1 : height
+            for x=1 : width
+                for bit=1 : 8
+                    if bit <= nbClear then
+                        image(y,x,l) = setbit(image(y,x,l),bit,0);
+                    end
+                end
+            end
+        end
+    end
+
+    debugImage = image;
+
+endfunction
+
+function debugPBI(image,nbSep)
+    height = size(image,1);
+    width = size(image,2);
+    layer = size(image,3);
+
+    for l=1 : layer
+        printf("layer %d\n",l);
+        for y=1 : height
+            for x=1 : width
+                for bit=1 : 8
+                    if 9-bit == nbSep then
+                        printf(" ");
+                    end
+                    printf("%d", bitget(image(y,x,l),9-bit));
+                end
+                printf("  ");
+            end
+            printf("\n");
+        end
+        printf("\n");
+    end
 endfunction
