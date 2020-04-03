@@ -30,7 +30,7 @@ function imageResult = hideImage(imageHost,imageHide,nbLSB,nbImage)
     bar = waitbar(percent/100, "Hiding Data...");
 
     for y=1 : heightImageResult
-        tmp_percent = floor(y*100/heightResultImage);
+        tmp_percent = floor(y*100/heightImageResult);
         waitbar(tmp_percent/100, "Hiding Data...", bar);
         if ~(tmp_percent == percent) && modulo(tmp_percent, 10) == 0 then
             percent = tmp_percent;
