@@ -17,6 +17,9 @@ function[resultImage] = hideImage(imageHost,imageHide,nbLSB,nbImage)
 
     percent = 0;
     tmp_percent = 0;
+    
+    // Waitbar
+    bar = waitbar(percent/100, "Hiding Data...");
 
     if coef < 1 then
        coef = 1
@@ -27,9 +30,10 @@ function[resultImage] = hideImage(imageHost,imageHide,nbLSB,nbImage)
 
     for y=1 : heightResultImage
         tmp_percent = floor(y*100/heightResultImage);
+        waitbar(tmp_percent/100, "Hiding Data...", bar);
         if ~(tmp_percent == percent) && modulo(tmp_percent, 10) == 0 then
             percent = tmp_percent;
-           printf("Hiding Data: %d percent\n", percent);
+           printf("Hiding Data: %d percent\n", percent);           
         end
         //printf("y=%d/%d\n",y,heightResultImage)
         for x=1 : widthResultImage
@@ -78,4 +82,5 @@ function[resultImage] = hideImage(imageHost,imageHide,nbLSB,nbImage)
             end
         end
     end
+    close(bar);
 endfunction

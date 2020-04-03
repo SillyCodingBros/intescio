@@ -22,11 +22,15 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
 
     percent = 0;
     tmp_percent = 0;
+    
+    // Waitbar
+    bar = waitbar(percent/100, "Step 1/2 - Hiding Data...");
 
     //printf("size host %d\n", widthHide);
 
     for y=1 : heightHost
         tmp_percent = floor(y*100/heightHost);
+        waitbar(tmp_percent/100, "Step 1/2 - Finding Data...", bar);
         if ~(tmp_percent == percent) && modulo(tmp_percent, 10) == 0 then
             percent = tmp_percent;
            printf("Finding Data: %d percent\n", percent);
@@ -195,9 +199,12 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
     //disp('\n');
     //disp(listBlueHideImage)
     //disp('\n');
+    
+    waitbar(0, "Step 2/2 - Rebuilding Image...", bar);
 
     for y=1 : hideHeight
         tmp_percent = floor(y*100/hideHeight);
+        waitbar(tmp_percent/100, "Step 2/2 - Rebuilding Image...", bar);
         if ~(tmp_percent == percent) && modulo(tmp_percent, 10) == 0 then
             percent = tmp_percent;
            printf("Rebuilding Image: %d percent\n", percent);
@@ -302,7 +309,8 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
            zero = 0;
         end
     end
-
+    
+    /*
     printf("pix2get : %d\n", pix2get)
     printf("listRedHideImage size : %d\n", size(listRedHideImage(1)))
     printf("listGreenHideImage size : %d\n", size(listGreenHideImage(1)))
@@ -321,9 +329,11 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
           tmp2 = tmp;
        end
     end
+    printf("\n")
+    */
+    
+    close(bar);
 
     //disp(listRedHideImage(1))
-    //resultImage = imresize(imageHost,sqrt(sizeHide*(widthHide/heightHide))/widthHide);
-    //resultImage = imageHide;
 
 endfunction

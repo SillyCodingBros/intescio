@@ -7,7 +7,8 @@ menuFigure = figure('figure_position',[500,163],'figure_size',[988,649],'auto_re
 hideFigure = figure('figure_position',[500,163],'figure_size',[988,649],'auto_resize','on','background',[33],'figure_name','Intescio - Hide','dockable','off','infobar_visible','off','toolbar_visible','off','menubar_visible','off','default_axes','on','visible','off');
 findFigure = figure('figure_position',[500,163],'figure_size',[988,649],'auto_resize','on','background',[33],'figure_name','Intescio - Find','dockable','off','infobar_visible','off','toolbar_visible','off','menubar_visible','off','default_axes','on','visible','off');
 */
-mainFigure = figure('figure_position',[500,163],'figure_size',[988,649],'auto_resize','on','background',[33],'figure_name','Intescio','dockable','off','infobar_visible','off','toolbar_visible','off','menubar_visible','off','default_axes','on','visible','on');
+mainFigure = figure('figure_position',[500,163],'figure_size',[988,649],'auto_resize','on','background',[33],'figure_name','Intescio','dockable','off','infobar_visible','off','toolbar_visible','off','menubar_visible','off','default_axes','on','visible','off');
+
 //////////
 
 ////////// handles.title handles.goToHideImage handles.goToFindImage
@@ -66,7 +67,13 @@ handles.f_imageRedundancySpin=uicontrol(mainFigure,'unit','normalized','Backgrou
 handles.f_leastSignificantBitsText=uicontrol(mainFigure,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.0503856,0.6808734,0.1363753,0.0458515],'Relief','default','SliderStep',[0.01,0.1],'String','LSB Used','Style','text','Value',[0],'VerticalAlignment','middle','Visible','off','Tag','leastSignificantBitsText','Callback','');
 handles.f_LSBUsedSpin=uicontrol(mainFigure,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','off','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[8],'Min',[0],'Position',[0.1958098,0.669607,0.0347044,0.0764192],'Relief','default','SliderStep',[1,1],'String','LSBUsedSpin','Style','spinner','Value',[4],'VerticalAlignment','middle','Visible','off','Tag','LSBUsedSpin','Callback','');
 
-
+//////////
+// MAIN ELEMENTS ###############################################
+//////////
+// Waitbar
+//handles.waitbar = waitbar(0.5, "Waitbar Test");
+// Activate Window
+mainFigure.visible = 'on';
 
 //////////
 // Callbacks are defined as below. Please do not delete the comments as it will be used in coming version
@@ -125,7 +132,7 @@ endfunction
 
 function loadImage1Button_callback(handles)
 //Write your callback for  loadImage1Button  here
-fn = uigetfile('*');
+fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], 'C:\Users\Thomas\Documents\Scilab\img', "Choose a file");
 hostImage = imread(fn);
 sca(handles.image1);
 imshow(hostImage);
@@ -145,12 +152,12 @@ endfunction
 
 function loadImage2Button_callback(handles)
 //Write your callback for  loadImage2Button  here
-fn = uigetfile('*');
+fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], 'C:\Users\Thomas\Documents\Scilab\img', "Choose a file");
 hideImage = imread(fn);
 sca(handles.image2);
 imshow(hideImage);
 
-handles.hostImage = hideImage;
+handles.hideImage = hideImage;
 
 handles.hasImage2 = %T;
 if handles.hasImage1 then
@@ -164,12 +171,29 @@ endfunction
 
 function hideDataButton_callback(handles)
 //Write your callback for  hideDataButton  here
-
+exec('C:\Users\Thomas\Documents\Scilab\intescio\src\hide.sci', -1)
+handles.resultHideImage = hideImage(handles.hostImage, handles.hideImage, handles.h_LSBUsedSpin.value, handles.h_imageRedundancySpin.value);
+sca(handles.resultImage);
+imshow(handles.resultHideImage);
+handles.saveResultButton.Enable = 'on';
+handles = resume(handles);
 endfunction
 
 
 function saveResultButton_callback(handles)
 //Write your callback for  saveResultButton  here
+fn = uiputfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";],'C:\Users\Thomas\Documents\Scilab\img\results', "Choose a file name");
+disp(fn)
+ext = list(".bmp", ".dib", ".jpeg", ".jpg", ".jpe", ".png", ".pbm", ".pgm", ".ppm", ".sr", ".ras", ".tiff", ".tif")
+for x=1 : size(ext)
+    if strstr(fn, ext(x)) == ext(x) then
+        imwrite(handles.resultHideImage, fn);
+        return;
+    end
+end
+ 
+fn = fn + ".png";
+imwrite(handles.resultHideImage, fn);
 
 endfunction
 
@@ -216,7 +240,7 @@ endfunction
 function loadHostImageButton_callback(handles)
 //Write your callback for  loadImageButton  here
 
-fn = uigetfile('*');
+fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], 'C:\Users\Thomas\Documents\Scilab\img\results', "Choose a file");
 hostImage = imread(fn);
 sca(handles.prevHostImage);
 imshow(hostImage);
@@ -232,12 +256,28 @@ endfunction
 
 function findDataButton_callback(handles)
 //Write your callback for  findDataButton  here
-
+exec('C:\Users\Thomas\Documents\Scilab\intescio\src\find.sci', -1)
+handles.resultFindImage = findImage(handles.hostImage, handles.f_LSBUsedSpin.value, handles.f_imageRedundancySpin.value);
+sca(handles.prevHideImage);
+imshow(handles.resultFindImage);
+handles.saveHideImageButton.Enable = 'on';
+handles = resume(handles);
 endfunction
 
 function saveHideImageButton_callback(handles)
 //Write your callback for  saveResultButton  here
-
+fn = uiputfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";],'C:\Users\Thomas\Documents\Scilab\img\results', "Choose a file name");
+disp(fn)
+ext = list(".bmp", ".dib", ".jpeg", ".jpg", ".jpe", ".png", ".pbm", ".pgm", ".ppm", ".sr", ".ras", ".tiff", ".tif")
+for x=1 : size(ext)
+    if strstr(fn, ext(x)) == ext(x) then
+        imwrite(handles.resultFindImage, fn);
+        return;
+    end
+end
+ 
+fn = fn + ".png";
+imwrite(handles.resultFindImage, fn);
 endfunction
 
 function f_goHome_callback(handles)
