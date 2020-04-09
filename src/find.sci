@@ -6,6 +6,8 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
     heightHost = size(imageHost,1);
     widthHost = size(imageHost,2);
 
+    //resultImage=imageHost;
+
     bitHide = 0;
     bitHeader = 1;
 
@@ -22,9 +24,9 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
 
     percent = 0;
     tmp_percent = 0;
-    
+
     // Waitbar
-    bar = waitbar(percent/100, "Step 1/2 - Hiding Data...");
+    bar = waitbar(0, "Step 1/2 - Hiding Data...");
 
     //printf("size host %d\n", widthHide);
 
@@ -48,6 +50,9 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
                 end
             else
                 if ~isCurrentHeader && bitget(imageHost(y,x,1), 1) == bitHeader then
+                    //if x==1 then
+                       //printf("%d:%d %d - %d \n", x, y, imageHost(y,x,1), bitget(imageHost(y,x,1), 1))
+                    //end
                     indexHeader = indexHeader + 1;
                     for lsb=2 : nbLSB
                         //listHeadersHeight(indexHeader) = (2^(lsb-2)) * bitget(imageHost(y,x,1), lsb);
@@ -81,9 +86,9 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
                            listRedHideImage(indexRGB) = list(bitget(imageHost(y,x,1), lsb));
                            listGreenHideImage(indexRGB) = list(bitget(imageHost(y,x,2), lsb));
                            listBlueHideImage(indexRGB) = list(bitget(imageHost(y,x,3), lsb));
-                           if indexRGB==1 then
-                              printf("first bit: %d\n", bitget(imageHost(y,x,1), lsb))
-                           end
+                           //if indexRGB==1 then
+                              //printf("first bit: %d\n", bitget(imageHost(y,x,1), lsb))
+                           //end
                         else
                            listRedHideImage(indexRGB)($+1) = bitget(imageHost(y,x,1), lsb);
                            listGreenHideImage(indexRGB)($+1) = bitget(imageHost(y,x,2), lsb);
@@ -103,12 +108,24 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
     zero = 0;
     //endIt = %f;
 
-    //disp(size(listHeadersHeight))
-    //disp(size(listHeadersWidth))
+    /*
+    disp(size(listHeadersHeight))
+    disp(size(listHeadersWidth))
+
+    disp(size(listHeadersHeight(1)))
+    disp(size(listHeadersWidth(1)))
+
+    
+    for x=1 : size(listHeadersHeight)
+      printf("size list %d = %d\n", x, size(listHeadersHeight(x)))
+    end
+    for x=1 : size(listHeadersWidth)
+      printf("size list %d = %d\n", x, size(listHeadersWidth(x)))
+    end
+    */
 
     //disp(listHeadersHeight(1))
     //disp(listHeadersWidth(1))
-
 
     octSize = ceil(32/(nbLSB-1)) * (nbLSB-1);
     //disp(octSize);
@@ -182,7 +199,9 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
     end
 
     //disp(hideHeight,"y",hideWidth)
-    printf("%dx%d\n", hideHeight, hideWidth);
+    printf("hidden image %dx%d\n", hideHeight, hideWidth);
+
+    resultImage = imresize(imageHost, [hideHeight, hideWidth]);
 
     // Comp Image Layer & Add to result image
     percent = 0;
@@ -199,7 +218,7 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
     //disp('\n');
     //disp(listBlueHideImage)
     //disp('\n');
-    
+
     waitbar(0, "Step 2/2 - Rebuilding Image...", bar);
 
     for y=1 : hideHeight
@@ -236,10 +255,10 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
                        pos = 5
                     end
                    hidePix = hidePix + (2^(pos));
-                   if c == 1 || c==2 || c==3 then
-                      printf("hidePix: %d pos: %d value: %d", hidePix, pos, (2^(pos)))
-                      disp(hidePix)
-                   end
+                   //if c == 1 || c==2 || c==3 then
+                    //  printf("hidePix: %d pos: %d value: %d", hidePix, pos, (2^(pos)))
+                    //  disp(hidePix)
+                   //end
                 end
                 one = 0;
                 zero = 0;
@@ -309,7 +328,7 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
            zero = 0;
         end
     end
-    
+
     /*
     printf("pix2get : %d\n", pix2get)
     printf("listRedHideImage size : %d\n", size(listRedHideImage(1)))
@@ -331,7 +350,9 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
     end
     printf("\n")
     */
-    
+
+    //resultImage = im2uint8(resultImage);
+
     close(bar);
 
     //disp(listRedHideImage(1))
