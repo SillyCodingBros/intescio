@@ -8,9 +8,6 @@ function[resultImage] = hideImage(imageHost,imageHide,nbLSB,nbImage)
     header = [uint32(widthHide),uint32(heightHide)];
 
     sizeHide = (heightHide*widthHide+ceil(32/(nbLSB-1)))*nbImage;
-    sizeHost = heightHost*widthHost;
-
-    printf("nb images = %d", ceil(sizeHost/sizeHide));
 
     isHeader = %t;
     hideEnd = %f;
