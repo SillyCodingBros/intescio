@@ -82,6 +82,8 @@ function[resultImage] = hideImage(imageHost,imageHide,nbLSB,nbImage)
                     else
                         hideEnd = %t;
                     end
+
+                    continue;
                 end
             end
 
@@ -102,12 +104,12 @@ function[resultImage] = hideImage(imageHost,imageHide,nbLSB,nbImage)
                         //else
                             resultImage(y,x,1) = bitset(resultImage(y,x,1), bit, bitget(heightHide,33-bitHeader));
                             resultImage(y,x,2) = bitset(resultImage(y,x,2), bit, bitget(widthHide,33-bitHeader));
-                            //printf("%d:%d - ",x,y)
+                            //printf("\n%d:%d - ",x,y)
                             //printf("bitheader = %d - ", bitHeader)
-                            //printf("bitget = %d\n", bitget(heightHide,33-bitHeader))
+                            //printf("bitget = %d", bitget(heightHide,33-bitHeader))
                             bitHeader = bitHeader+1;
                             if bitHeader > 32 then
-                                //printf("header = %d\n", resultImage(y,x,1))
+                                //printf("\n%d %d header = %d\n", x, y, resultImage(y,x,1))
                                 bitHeader = 1;
                                 isHeader = %f;
                                 break;

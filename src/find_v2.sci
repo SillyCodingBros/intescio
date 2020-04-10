@@ -26,16 +26,180 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
     tmp_percent = 0;
 
     // Waitbar
-    bar = waitbar(0, "Step 1/2 - Finding Data...");
+    bar = waitbar(0, "Step 1/3 - Finding Data...");
 
     //printf("size host %d\n", widthHide);
 
     for y=1 : heightHost
         tmp_percent = floor(y*100/heightHost);
-        waitbar(tmp_percent/100, "Step 1/2 - Finding Data...", bar);
+        waitbar(tmp_percent/100, "Step 1/3 - Finding Data...", bar);
         if ~(tmp_percent == percent) && modulo(tmp_percent, 10) == 0 then
             percent = tmp_percent;
-           printf("Finding Data: %d percent\n", percent);
+           printf("Step 1/3 - Finding Data: %d percent\n", percent);
+        end
+       for x=1 : widthHost
+           if bitget(imageHost(y,x,1), 1) == bitHide then
+              isCurrentHeader = %f;
+           end
+
+           if isCurrentHeader && bitget(imageHost(y,x,1), 1) == bitHeader then
+               //disp("test3")
+               for lsb=2 : nbLSB
+                  listHeadersHeight(indexHeader)($+1) = bitget(imageHost(y,x,1), lsb);
+                  listHeadersWidth(indexHeader)($+1) = bitget(imageHost(y,x,2), lsb);
+
+                  //listHeadersHeight(indexHeader) = listHeadersHeight(indexHeader) + ((2^(lsb-2)) * bitget(imageHost(y,x,1), lsb));
+                  //listHeadersWidth(indexHeader) =  listHeadersWidth(indexHeader) + ((2^(lsb-2)) * bitget(imageHost(y,x,2), lsb));
+               end
+           end
+
+           if ~isCurrentHeader && bitget(imageHost(y,x,1), 1) == bitHeader then
+               //if x==1 then
+                  //printf("%d:%d %d - %d \n", x, y, imageHost(y,x,1), bitget(imageHost(y,x,1), 1))
+               //end
+               indexHeader = indexHeader + 1;
+               for lsb=2 : nbLSB
+                   //listHeadersHeight(indexHeader) = (2^(lsb-2)) * bitget(imageHost(y,x,1), lsb);
+                   //listHeadersWidth(indexHeader) =  (2^(lsb-2)) * bitget(imageHost(y,x,2), lsb);
+
+                   //listHeadersHeight(indexHeader) = bitset(listHeadersHeight(indexHeader),indexBitHeader,bitget(imageHost(y,x,1), lsb));
+                   if lsb==2 then
+                      listHeadersHeight(indexHeader) = list(bitget(imageHost(y,x,1), lsb));
+                      listHeadersWidth(indexHeader) = list(bitget(imageHost(y,x,2), lsb));
+                   else
+                      listHeadersHeight(indexHeader)($+1) = bitget(imageHost(y,x,1), lsb);
+                      listHeadersWidth(indexHeader)($+1) = bitget(imageHost(y,x,2), lsb);
+                   end
+               end
+               isCurrentHeader = %t;
+           end
+       end
+    end
+
+
+    // Get header size Can Use Function rewrite
+    hideHeight = 0; //uint32(0);
+    one = 0;
+    zero = 0;
+    //endIt = %f;
+
+
+    disp(size(listHeadersHeight))
+    disp(size(listHeadersWidth))
+
+    disp(size(listHeadersHeight(1)))
+    disp(size(listHeadersWidth(1)))
+
+
+    for x=1 : size(listHeadersHeight)
+      printf("size list %d = %d\n", x, size(listHeadersHeight(x)))
+    end
+    /*
+    for x=1 : size(listHeadersWidth)
+      printf("size list %d = %d\n", x, size(listHeadersWidth(x)))
+    end
+
+    */
+
+    //disp(listHeadersHeight(1))
+    //disp(listHeadersWidth(1))
+
+    octSize = ceil(32/(nbLSB-1)) * (nbLSB-1);
+    //disp(octSize);
+    count = 0
+    for it=1 : 32
+        for h=1 : size(listHeadersHeight)
+            if ~(octSize == size(listHeadersHeight(h))) then
+                //endIt = %t;
+                continue;
+            end
+
+            if it == 1 then
+                //disp(h);
+               count = count + 1;
+            end
+
+            //disp(size(listHeadersWidth(h)));
+            if listHeadersHeight(h)(it) == 0 then
+              zero = zero + 1;
+            else
+              one = one + 1;
+            end
+        end
+        //if endIt then
+            //endIt = %f;
+            //one = 0;
+            //zero = 0;
+            //break;
+        //end
+        //disp(one)
+        //disp(zero)
+        if one > zero then
+            //disp("1")
+            //hideHeight = bitset(hideHeight, it, 1);
+            hideHeight = hideHeight + (2^(32 - it));
+            //printf("hideHeight = %d px\n", hideHeight);
+        //else
+            //disp("0")
+            //hideHeight = bitset(hideHeight, it, 0);
+            //hideHeight = (2^(33 - it)) * 0 bitget(imageHost(y,x,1), 33 - it);
+        end
+        one = 0;
+        zero = 0;
+    end
+
+    hideWidth = 0;//uint32(0);
+    one = 0;
+    zero = 0;
+    //endIt = %f;
+
+    for it=1 : 32
+        for h=1 : size(listHeadersWidth)
+            if ~(octSize == size(listHeadersWidth(h))) then
+                continue;
+            end
+            if listHeadersWidth(h)(it) == 0 then
+              zero = zero + 1;
+            else
+              one = one + 1;
+            end
+        end
+        //if endIt then
+        //    endIt = %f;
+        //    one = 0;
+        //    zero = 0;
+        //    break;
+        //end
+        if one > zero then
+            //hideWidth = bitset(hideWidth, it, 1);
+            hideWidth = hideWidth + (2^(32 - it));
+            //printf("hideWidth = %d px\n", hideWidth);
+            //disp("1")
+        //else
+            //hideWidth = bitset(hideWidth, it, 0);
+            //disp("0")
+        end
+        one = 0;
+        zero = 0;
+    end
+
+    //disp(hideHeight,"y",hideWidth)
+    printf("count header ok %d\n", count);
+    printf("hidden image %dx%d\n", hideHeight, hideWidth);
+
+    resultImage = resume(resultImage);
+
+    resultImage = imresize(imageHost, [hideHeight, hideWidth]);
+
+    tmp_percent = 0;
+    percent = 0;
+
+    for y=1 : heightHost
+        tmp_percent = floor(y*100/heightHost);
+        waitbar(tmp_percent/100, "Step 2/3 - Finding Images...", bar);
+        if ~(tmp_percent == percent) && modulo(tmp_percent, 10) == 0 then
+            percent = tmp_percent;
+           printf("Step 2/3 - Finding Images: %d percent\n", percent);
         end
         for x=1 : widthHost
             //disp("test2 ", isCurrentHeader==1, bitget(imageHost(y,x,1),1) == bitHeader)
@@ -102,107 +266,6 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
         end
     end
 
-    // Get header size
-    hideHeight = 0; //uint32(0);
-    one = 0;
-    zero = 0;
-    //endIt = %f;
-
-    /*
-    disp(size(listHeadersHeight))
-    disp(size(listHeadersWidth))
-
-    disp(size(listHeadersHeight(1)))
-    disp(size(listHeadersWidth(1)))
-
-
-    for x=1 : size(listHeadersHeight)
-      printf("size list %d = %d\n", x, size(listHeadersHeight(x)))
-    end
-    for x=1 : size(listHeadersWidth)
-      printf("size list %d = %d\n", x, size(listHeadersWidth(x)))
-    end
-    */
-
-    //disp(listHeadersHeight(1))
-    //disp(listHeadersWidth(1))
-
-    octSize = ceil(32/(nbLSB-1)) * (nbLSB-1);
-    //disp(octSize);
-
-    for it=1 : 32
-        for h=1 : size(listHeadersHeight)
-            if ~(octSize == size(listHeadersHeight(h))) then
-                //endIt = %t;
-                break;
-            end
-            //disp(size(listHeadersWidth(h)));
-            if listHeadersHeight(h)(it) == 0 then
-              zero = zero + 1;
-            else
-              one = one + 1;
-            end
-        end
-        //if endIt then
-            //endIt = %f;
-            //one = 0;
-            //zero = 0;
-            //break;
-        //end
-        if one > zero then
-            //disp("1")
-            //hideHeight = bitset(hideHeight, it, 1);
-            hideHeight = hideHeight + (2^(32 - it));
-            //printf("hideHeight = %d px\n", hideHeight);
-        //else
-            //disp("0")
-            //hideHeight = bitset(hideHeight, it, 0);
-            //hideHeight = (2^(33 - it)) * 0 bitget(imageHost(y,x,1), 33 - it);
-        end
-        one = 0;
-        zero = 0;
-    end
-
-    hideWidth = 0;//uint32(0);
-    one = 0;
-    zero = 0;
-    //endIt = %f;
-
-    for it=1 : 32
-        for h=1 : size(listHeadersWidth)
-            if ~(octSize == size(listHeadersWidth(h))) then
-                break;
-            end
-            if listHeadersWidth(h)(it) == 0 then
-              zero = zero + 1;
-            else
-              one = one + 1;
-            end
-        end
-        //if endIt then
-        //    endIt = %f;
-        //    one = 0;
-        //    zero = 0;
-        //    break;
-        //end
-        if one > zero then
-            //hideWidth = bitset(hideWidth, it, 1);
-            hideWidth = hideWidth + (2^(32 - it));
-            //printf("hideWidth = %d px\n", hideWidth);
-            //disp("1")
-        //else
-            //hideWidth = bitset(hideWidth, it, 0);
-            //disp("0")
-        end
-        one = 0;
-        zero = 0;
-    end
-
-    //disp(hideHeight,"y",hideWidth)
-    printf("hidden image %dx%d\n", hideHeight, hideWidth);
-
-    resultImage = imresize(imageHost, [hideHeight, hideWidth]);
-
     // Comp Image Layer & Add to result image
     percent = 0;
     tmp_percent = 0;
@@ -219,14 +282,14 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
     //disp(listBlueHideImage)
     //disp('\n');
 
-    waitbar(0, "Step 2/2 - Rebuilding Image...", bar);
+    waitbar(0, "Step 3/3 - Rebuilding Image...", bar);
 
     for y=1 : hideHeight
         tmp_percent = floor(y*100/hideHeight);
-        waitbar(tmp_percent/100, "Step 2/2 - Rebuilding Image...", bar);
+        waitbar(tmp_percent/100, "Step 3/3 - Rebuilding Image...", bar);
         if ~(tmp_percent == percent) && modulo(tmp_percent, 10) == 0 then
             percent = tmp_percent;
-           printf("Rebuilding Image: %d percent\n", percent);
+           printf("Step 3/3 - Rebuilding Image: %d percent\n", percent);
         end
         //printf("%d/%d\n", y, hideHeight);
         for  x=1 : hideWidth
@@ -353,6 +416,7 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
 
     //resultImage = im2uint8(resultImage);
 
+    //Close waitbar
     close(bar);
 
     //disp(listRedHideImage(1))

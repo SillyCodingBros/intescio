@@ -298,7 +298,7 @@ endfunction
 
 function findDataButton_callback(handles)
 //Write your callback for  findDataButton  here
-exec('C:\Users\Thomas\Documents\Scilab\intescio\src\find.sci', -1)
+exec('C:\Users\Thomas\Documents\Scilab\intescio\src\find_v2.sci', -1)
 handles.resultFindImage = findImage(handles.hostImage2Find, handles.f_LSBUsedSpin.value, handles.f_imageRedundancySpin.value);
 sca(handles.prevHideImage);
 imshow(handles.resultFindImage);
