@@ -1,14 +1,17 @@
 function[resultImage] = hideImage(imageHost,imageHide,nbLSB,nbImage)
+
+    imageHost = im2uint8(imageHost);
     heightHost = size(imageHost,1);
     widthHost = size(imageHost,2);
 
+    imageHide = im2uint8(imageHide);
     heightHide = size(imageHide,1);
     widthHide = size(imageHide,2);
 
     header = [uint32(widthHide),uint32(heightHide)];
 
     sizeHide = (heightHide*widthHide+ceil(32/(nbLSB-1)))*nbImage;
-
+    
     isHeader = %t;
     hideEnd = %f;
     bitHeader = 1;
@@ -22,7 +25,6 @@ function[resultImage] = hideImage(imageHost,imageHide,nbLSB,nbImage)
     resultImage = imresize(imageHost,coef);
     heightResultImage = size(resultImage,1);
     widthResultImage = size(resultImage,2);
-
     //im_write_count = 0;
 
     // Waitbar
