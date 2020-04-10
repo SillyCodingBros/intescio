@@ -141,6 +141,10 @@ handles.hostImage = hostImage;
 
 handles.hasImage1 = %T;
 if handles.hasImage2 then
+    dim_host = size(handles.hostImage,1) * size(handles.hostImage,2);
+    dim_hide = size(handles.hideImage,1) * size(handles.hideImage,2);
+    redun_opti = floor(dim_host / dim_hide);
+    handles.h_imageRedundancySpin.Value = [redun_opti];
     handles.hideDataButton.Enable = 'on';
     handles.h_imageRedundancySpin.Enable = 'on';
     handles.h_LSBUsedSpin.Enable = 'on';
@@ -161,6 +165,10 @@ handles.hideImage = hideImage;
 
 handles.hasImage2 = %T;
 if handles.hasImage1 then
+    dim_host = size(handles.hostImage,1) * size(handles.hostImage,2);
+    dim_hide = size(handles.hideImage,1) * size(handles.hideImage,2);
+    redun_opti = floor(dim_host / dim_hide);
+    handles.h_imageRedundancySpin.Value = [redun_opti];
     handles.hideDataButton.Enable = 'on';
     handles.h_imageRedundancySpin.Enable = 'on';
     handles.h_LSBUsedSpin.Enable = 'on';
