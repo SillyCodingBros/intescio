@@ -35,11 +35,11 @@ handles.loadImage1Button=uicontrol(mainFigure,'unit','normalized','BackgroundCol
 handles.loadImage2Button=uicontrol(mainFigure,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.8012082,0.4623144,0.1760925,0.0676856],'Relief','default','SliderStep',[0.01,0.1],'String','Load Image to Hide','Style','pushbutton','Value',[0],'VerticalAlignment','middle','Visible','off','Tag','loadImage2Button','Callback','loadImage2Button_callback(handles)');
 
 // Spins & Text
-handles.h_imageRedundancyText=uicontrol(mainFigure,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.0359897,0.3349782,0.1456555,0.0458515],'Relief','default','SliderStep',[0.01,0.1],'String','Image Redundancy','Style','text','Value',[0],'VerticalAlignment','middle','Visible','off','Tag','imageRedundancyText','Callback','');
-handles.h_imageRedundancyRecommendedText=uicontrol(mainFigure,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[10],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.0359897,0.2800000,0.1456555,0.0458515],'Relief','default','SliderStep',[0.01,0.1],'Style','text','Value',[0],'VerticalAlignment','middle','Visible','off','Tag','imageRedundancyRecommendedText','Callback','');
-handles.h_imageRedundancySpin=uicontrol(mainFigure,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','off','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[100],'Min',[1],'Position',[0.1983805,0.3169432,0.0385604,0.0873362],'Relief','default','SliderStep',[1,1],'String','imageRedundancySpin','Style','spinner','Value',[1],'VerticalAlignment','middle','Visible','off','Tag','imageRedundancySpin','Callback','');
+handles.h_imageRedundancyText=uicontrol(mainFigure,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.0359897,0.3549782,0.1456555,0.0458515],'Relief','default','SliderStep',[0.01,0.1],'String','Image Redundancy','Style','text','Value',[0],'VerticalAlignment','middle','Visible','off','Tag','imageRedundancyText','Callback','');
+handles.h_imageRedundancyRecommendedText=uicontrol(mainFigure,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[10],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.0359897,0.3000000,0.1456555,0.0458515],'Relief','default','SliderStep',[0.01,0.1],'Style','text','Value',[0],'VerticalAlignment','middle','Visible','off','Tag','imageRedundancyRecommendedText','Callback','');
+handles.h_imageRedundancySpin=uicontrol(mainFigure,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','off','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1000000],'Min',[1],'Position',[0.1983805,0.3069432,0.0705604,0.0873362],'Relief','default','SliderStep',[1,1],'String','imageRedundancySpin','Style','spinner','Value',[1],'VerticalAlignment','middle','Visible','off','Tag','imageRedundancySpin','Callback','');
 handles.h_leastSignificantBitsText=uicontrol(mainFigure,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.0367095,0.1979913,0.1456555,0.0458515],'Relief','default','SliderStep',[0.01,0.1],'String','LSB Used','Style','text','Value',[0],'VerticalAlignment','middle','Visible','off','Tag','leastSignificantBitsText','Callback','');
-handles.h_LSBUsedSpin=uicontrol(mainFigure,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','off','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[8],'Min',[0],'Position',[0.1958098,0.179607,0.0347044,0.0764192],'Relief','default','SliderStep',[1,1],'String','LSBUsedSpin','Style','spinner','Value',[4],'VerticalAlignment','middle','Visible','off','Tag','LSBUsedSpin','Callback','LSBUsedSpin_callback(handles)');
+handles.h_LSBUsedSpin=uicontrol(mainFigure,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','off','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[8],'Min',[2],'Position',[0.1958098,0.179607,0.0347044,0.0764192],'Relief','default','SliderStep',[1,1],'String','LSBUsedSpin','Style','spinner','Value',[4],'VerticalAlignment','middle','Visible','off','Tag','LSBUsedSpin','Callback','LSBUsedSpin_callback(handles)');
 
 // Action Buttons
 handles.hideDataButton=uicontrol(mainFigure,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','off','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.0444216,0.0511354,0.1863753,0.069869],'Relief','default','SliderStep',[0.01,0.1],'String','Hide It!','Style','pushbutton','Value',[0],'VerticalAlignment','middle','Visible','off','Tag','hideDataButton','Callback','hideDataButton_callback(handles)');
@@ -64,9 +64,9 @@ handles.f_goHome=uicontrol(mainFigure,'unit','normalized','BackgroundColor',[-1,
 
 // Texts & Spinners
 handles.f_imageRedundancyText=uicontrol(mainFigure,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.0503856,0.7965939,0.1363753,0.0458515],'Relief','default','SliderStep',[0.01,0.1],'String','Image Redundancy','Style','text','Value',[0],'VerticalAlignment','middle','Visible','off','Tag','imageRedundancyText','Callback','');
-handles.f_imageRedundancySpin=uicontrol(mainFigure,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','off','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[100],'Min',[1],'Position',[0.1983805,0.7769432,0.0385604,0.0873362],'Relief','default','SliderStep',[1,1],'String','imageRedundancySpin','Style','spinner','Value',[1],'VerticalAlignment','middle','Visible','off','Tag','imageRedundancySpin','Callback','');
+handles.f_imageRedundancySpin=uicontrol(mainFigure,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','off','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1000000],'Min',[1],'Position',[0.1983805,0.7769432,0.0385604,0.0873362],'Relief','default','SliderStep',[1,1],'String','imageRedundancySpin','Style','spinner','Value',[1],'VerticalAlignment','middle','Visible','off','Tag','imageRedundancySpin','Callback','');
 handles.f_leastSignificantBitsText=uicontrol(mainFigure,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.0503856,0.6808734,0.1363753,0.0458515],'Relief','default','SliderStep',[0.01,0.1],'String','LSB Used','Style','text','Value',[0],'VerticalAlignment','middle','Visible','off','Tag','leastSignificantBitsText','Callback','');
-handles.f_LSBUsedSpin=uicontrol(mainFigure,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','off','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[8],'Min',[0],'Position',[0.1958098,0.669607,0.0347044,0.0764192],'Relief','default','SliderStep',[1,1],'String','LSBUsedSpin','Style','spinner','Value',[4],'VerticalAlignment','middle','Visible','off','Tag','LSBUsedSpin','Callback','');
+handles.f_LSBUsedSpin=uicontrol(mainFigure,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','off','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[8],'Min',[2],'Position',[0.1958098,0.669607,0.0347044,0.0764192],'Relief','default','SliderStep',[1,1],'String','LSBUsedSpin','Style','spinner','Value',[4],'VerticalAlignment','middle','Visible','off','Tag','LSBUsedSpin','Callback','');
 
 //////////
 // MAIN ELEMENTS ###############################################
@@ -134,7 +134,7 @@ endfunction
 
 function loadImage1Button_callback(handles)
 //Write your callback for  loadImage1Button  here
-fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], 'C:\Users\bobbywan\Documents\Scilab\img', "Choose a file");
+fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], 'C:\Users\Thomas\Documents\Scilab\img', "Choose a file");
 hostImage = imread(fn);
 sca(handles.image1);
 imshow(hostImage);
@@ -143,9 +143,11 @@ handles.hostImage = hostImage;
 
 handles.hasImage1 = %T;
 if handles.hasImage2 then
-    dim_host = size(handles.hostImage,1) * size(handles.hostImage,2);
-    dim_hide = size(handles.hideImage,1) * size(handles.hideImage,2);
-    redun_opti = floor(dim_host / dim_hide);
+    redun_opti = floor((size(handles.hostImage,1)*size(handles.hostImage,2))/(size(handles.hideImage,1)*size(handles.hideImage,2)+ceil(32/(handles.h_LSBUsedSpin.value-1))));
+    if redun_opti == 0 then
+        redun_opti = 1
+    end
+    handles.h_imageRedundancyRecommendedText.String = "Optitmum : " + string(redun_opti);
     handles.h_imageRedundancySpin.Value = [redun_opti];
     handles.hideDataButton.Enable = 'on';
     handles.h_imageRedundancySpin.Enable = 'on';
@@ -158,7 +160,7 @@ endfunction
 
 function loadImage2Button_callback(handles)
 //Write your callback for  loadImage2Button  here
-fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], 'C:\Users\bobbywan\Documents', "Choose a file");
+fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], 'C:\Users\Thomas\Documents\Scilab\img', "Choose a file");
 hideImage = imread(fn);
 sca(handles.image2);
 imshow(hideImage);
@@ -167,9 +169,11 @@ handles.hideImage = hideImage;
 
 handles.hasImage2 = %T;
 if handles.hasImage1 then
-    dim_host = size(handles.hostImage,1) * size(handles.hostImage,2);
-    dim_hide = size(handles.hideImage,1) * size(handles.hideImage,2);
-    redun_opti = floor(dim_host / dim_hide);
+    redun_opti = floor((size(handles.hostImage,1)*size(handles.hostImage,2))/(size(handles.hideImage,1)*size(handles.hideImage,2)+ceil(32/(handles.h_LSBUsedSpin.value-1))));
+    if redun_opti == 0 then
+        redun_opti = 1
+    end
+    handles.h_imageRedundancyRecommendedText.String = "Optimum : " + string(redun_opti);
     handles.h_imageRedundancySpin.Value = [redun_opti];
     handles.hideDataButton.Enable = 'on';
     handles.h_imageRedundancySpin.Enable = 'on';
@@ -189,7 +193,14 @@ function LSBUsedSpin_callback(handles)
 
     nbLSB = handles.h_LSBUsedSpin.value;
 
-    handles.h_imageRedundancyRecommendedText.String = "redundancy recommended : " + string(uint16((heightHost*widthHost)/(heightHide*widthHide+ceil(32/(nbLSB-1)))));
+    //handles.h_imageRedundancyRecommendedText.String = "Optitmum : ";
+
+    opti = floor((size(handles.hostImage,1)*size(handles.hostImage,2))/(size(handles.hideImage,1)*size(handles.hideImage,2)+ceil(32/(handles.h_LSBUsedSpin.value-1))));
+    if opti == 0 then
+        opti = 1
+    end
+
+    handles.h_imageRedundancyRecommendedText.String = "Optimum : " + string(opti);
 
 endfunction
 
@@ -198,7 +209,7 @@ function hideDataButton_callback(handles)
 
 printf("host image = %d %d",size(handles.hostImage,1),size(handles.hostImage,2));
 
-exec('C:\Users\bobbywan\dev\scilab\intescio\src\hide_v2.sci', -1)
+exec('C:\Users\Thomas\Documents\Scilab\intescio\src\hide_v2.sci', -1)
 handles.resultHideImage = hideImage(handles.hostImage, handles.hideImage, handles.h_LSBUsedSpin.value, handles.h_imageRedundancySpin.value);
 sca(handles.resultImage);
 
@@ -212,7 +223,7 @@ endfunction
 
 function saveResultButton_callback(handles)
 //Write your callback for  saveResultButton  here
-fn = uiputfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";],'C:\Users\bobbywan\Documents', "Choose a file name");
+fn = uiputfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";],'C:\Users\Thomas\Documents\Scilab\img\results', "Choose a file name");
 ext = list(".bmp", ".dib", ".jpeg", ".jpg", ".jpe", ".png", ".pbm", ".pgm", ".ppm", ".sr", ".ras", ".tiff", ".tif")
 for x=1 : size(ext)
     if strstr(fn, ext(x)) == ext(x) then
@@ -271,7 +282,7 @@ endfunction
 function loadHostImageButton_callback(handles)
 //Write your callback for  loadImageButton  here
 
-fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], 'C:\Users\bobbywan\Documents', "Choose a file");
+fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], 'C:\Users\Thomas\Documents\Scilab\img\results', "Choose a file");
 hostImage2Find = imread(fn);
 sca(handles.prevHostImage);
 imshow(hostImage2Find);
@@ -287,7 +298,7 @@ endfunction
 
 function findDataButton_callback(handles)
 //Write your callback for  findDataButton  here
-exec('C:\Users\bobbywan\dev\scilab\intescio\src\find.sci', -1)
+exec('C:\Users\Thomas\Documents\Scilab\intescio\src\find.sci', -1)
 handles.resultFindImage = findImage(handles.hostImage2Find, handles.f_LSBUsedSpin.value, handles.f_imageRedundancySpin.value);
 sca(handles.prevHideImage);
 imshow(handles.resultFindImage);
@@ -297,7 +308,7 @@ endfunction
 
 function saveHideImageButton_callback(handles)
 //Write your callback for  saveResultButton  here
-fn = uiputfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";],'C:\Users\bobbywan\Documents', "Choose a file name");
+fn = uiputfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";],'C:\Users\Thomas\Documents\Scilab\img\results', "Choose a file name");
 ext = list(".bmp", ".dib", ".jpeg", ".jpg", ".jpe", ".png", ".pbm", ".pgm", ".ppm", ".sr", ".ras", ".tiff", ".tif")
 for x=1 : size(ext)
     if strstr(fn, ext(x)) == ext(x) then
