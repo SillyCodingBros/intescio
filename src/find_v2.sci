@@ -29,6 +29,8 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
 
     continue_choice = %t;
 
+    octSize = ceil(32/(nbLSB-1)) * (nbLSB-1);
+
     // Waitbar
     bar = waitbar(0, "Step 1/3 - Finding Data...");
 
@@ -71,6 +73,37 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
                   //printf("%d:%d %d - %d \n", x, y, imageHost(y,x,1), bitget(imageHost(y,x,1), 1))
                //end
                indexHeader = indexHeader + 1;
+               strHeaderHeight = ""
+               strHeaderWidth = ""
+               if indexHeader > 1 then
+                  //sleep(1000)
+                  for headerSize=1 : size(listHeadersHeight(indexHeader-1))
+                    strHeaderHeight = strHeaderHeight + string(listHeadersHeight(indexHeader-1)(headerSize))
+                  end
+                  numHeaderHeight = bin2dec(strHeaderHeight);
+
+                  for headerSize=1 : size(listHeadersWidth(indexHeader-1))
+                    strHeaderWidth = strHeaderWidth + string(listHeadersWidth(indexHeader-1)(headerSize))
+                  end
+                  numHeaderWidth = bin2dec(strHeaderWidth);
+
+                  if numHeaderHeight <= 0 || numHeaderWidth <= 0 || numHeaderHeight > heightHost || numHeaderWidth > widthHost || ~(octSize == size(listHeadersHeight(indexHeader-1))) || ~(octSize == size(listHeadersWidth(indexHeader-1))) then
+                    //printf("supp %d\n",  numHeaderHeight);
+                    listHeadersHeight(indexHeader-1) = null();
+                    listHeadersWidth(indexHeader-1) = null();
+                    indexHeader = indexHeader - 1;
+                  else
+                    printf("height %d - %s\n", numHeaderHeight, strHeaderHeight);
+                    printf("width %d - %s\n", numHeaderWidth, strHeaderWidth);
+                    //sleep(1500);
+                  end
+
+                  //[1,1] = list2vec(listHeadersHeight(indexHeader-1));
+                  //tmp = tmp + string();
+                  //printf("%s\n", tmp);
+
+
+               end
                for lsb=2 : nbLSB
                    //listHeadersHeight(indexHeader) = (2^(lsb-2)) * bitget(imageHost(y,x,1), lsb);
                    //listHeadersWidth(indexHeader) =  (2^(lsb-2)) * bitget(imageHost(y,x,2), lsb);
@@ -118,7 +151,6 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
     //disp(listHeadersHeight(1))
     //disp(listHeadersWidth(1))
 
-    octSize = ceil(32/(nbLSB-1)) * (nbLSB-1);
     //disp(octSize);
     count = 0
     for it=1 : 32
