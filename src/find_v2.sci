@@ -87,14 +87,14 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
     disp(size(listHeadersHeight))
     disp(size(listHeadersWidth))
 
-    disp(size(listHeadersHeight(1)))
-    disp(size(listHeadersWidth(1)))
+    //disp(size(listHeadersHeight(1)))
+    //disp(size(listHeadersWidth(1)))
 
-
+    /*
     for x=1 : size(listHeadersHeight)
       printf("size list %d = %d\n", x, size(listHeadersHeight(x)))
     end
-    /*
+
     for x=1 : size(listHeadersWidth)
       printf("size list %d = %d\n", x, size(listHeadersWidth(x)))
     end
@@ -187,7 +187,16 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
     printf("count header ok %d\n", count);
     printf("hidden image %dx%d\n", hideHeight, hideWidth);
 
-    resultImage = resume(resultImage);
+    if hideHeight > 0 && hideWidth > 0 then
+       resultImage = imresize(imageHost, [hideHeight, hideWidth]);
+       //Debug Return
+       resultImage = resume(resultImage);
+    else
+       waitbar(100, "Step 1/3 - Error Corrupted Data - Close Me", bar);
+       //Error Return
+       resultImage = resume(resultImage);
+    end
+
 
     resultImage = imresize(imageHost, [hideHeight, hideWidth]);
 
