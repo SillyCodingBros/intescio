@@ -76,6 +76,7 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
        end
     end
 
+    waitbar(100, "Step 1/3 - Processing...", bar);
 
     // Get header size Can Use Function rewrite
     hideHeight = 0; //uint32(0);
@@ -187,18 +188,15 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
     printf("count header ok %d\n", count);
     printf("hidden image %dx%d\n", hideHeight, hideWidth);
 
-    if hideHeight > 0 && hideWidth > 0 then
+    if hideHeight > 0 && hideWidth > 0 && hideHeight <= heightHost && hideWidth <= widthHost then
        resultImage = imresize(imageHost, [hideHeight, hideWidth]);
        //Debug Return
        resultImage = resume(resultImage);
     else
        waitbar(100, "Step 1/3 - Error Corrupted Data - Close Me", bar);
        //Error Return
-       resultImage = resume(resultImage);
+       resultImage = resume(imageHost);
     end
-
-
-    resultImage = imresize(imageHost, [hideHeight, hideWidth]);
 
     tmp_percent = 0;
     percent = 0;
