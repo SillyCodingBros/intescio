@@ -27,19 +27,22 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
     percent = 0;
     tmp_percent = 0;
 
+    continue_choice = %t;
+
     // Waitbar
     bar = waitbar(0, "Step 1/3 - Finding Data...");
 
     //printf("size host %d\n", widthHide);
 
     for y=1 : heightHost
-        if ~(size(listHeadersHeight) == size(listHeadersWidth)) || size(listHeadersHeight) > floor((heightHost*widthHost)/64) then
+        if (~(size(listHeadersHeight) == size(listHeadersWidth)) || size(listHeadersHeight) > floor((heightHost*widthHost)/64)) && continue_choice then
             n=messagebox("It seems your image might be corrupted!", "Warning", "warning", ["Stop" "Continue"], "modal");
             if n == 1 then
                 //Close waitbar
                 close(bar);
                 resultImage = resume(imageHost);
             end
+            continue_choice = %f;
         end
         tmp_percent = floor(y*100/heightHost);
         waitbar(tmp_percent/100, "Step 1/3 - Finding Data...", bar);
@@ -203,7 +206,10 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
        //Debug Return
        resultImage = resume(resultImage);
     else
-       waitbar(100, "Step 1/3 - Error Corrupted Data - Close Me", bar);
+       messagebox("Error Corrupted Data", "Error", "error")
+       //Close waitbar
+       close(bar);
+
        //Error Return
        resultImage = resume(imageHost);
     end
