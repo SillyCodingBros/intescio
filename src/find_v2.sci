@@ -3,6 +3,8 @@
 //endfunction
 
 function[resultImage] = findImage(imageHost,nbLSB,nbImage)
+    imageHost = im2uint8(imageHost);
+
     heightHost = size(imageHost,1);
     widthHost = size(imageHost,2);
 
@@ -31,6 +33,14 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
     //printf("size host %d\n", widthHide);
 
     for y=1 : heightHost
+        if ~(size(listHeadersHeight) == size(listHeadersWidth)) || size(listHeadersHeight) > floor((heightHost*widthHost)/64) then
+            n=messagebox("It seems your image might be corrupted!", "Warning", "warning", ["Stop" "Continue"], "modal");
+            if n == 1 then
+                //Close waitbar
+                close(bar);
+                resultImage = resume(imageHost);
+            end
+        end
         tmp_percent = floor(y*100/heightHost);
         waitbar(tmp_percent/100, "Step 1/3 - Finding Data...", bar);
         if ~(tmp_percent == percent) && modulo(tmp_percent, 10) == 0 then
