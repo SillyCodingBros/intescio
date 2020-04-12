@@ -2,11 +2,16 @@
 //    newBit = bit1 - modulo(bit1,2^nbLSB) + floor(bit2/2^nbLSB)
 //endfunction
 
-function[resultImage] = findImage(imageHost,nbLSB,nbImage)
+function[resultImage] = findImage(imageHost)
+    nbLSB = 4;
+
     imageHost = im2uint8(imageHost);
 
     heightHost = size(imageHost,1);
     widthHost = size(imageHost,2);
+
+    hideHeight = 0;
+    hideWidth = 0;
 
     //resultImage=imageHost;
 
@@ -15,7 +20,7 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
 
     listHeadersHeight = list();
     listHeadersWidth = list();
-    
+
     listRedHideImage = list();
     listGreenHideImage = list();
     listBlueHideImage = list();
@@ -241,6 +246,9 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
     printf("count header ok %d\n", count);
     printf("hidden image %dx%d\n", hideHeight, hideWidth);
 
+    //disp(listCoordHeadersStart)
+    //disp(size(listCoordHeadersStart))
+
     if hideHeight > 0 && hideWidth > 0 && hideHeight <= heightHost && hideWidth <= widthHost then
        resultImage = imresize(imageHost, [hideHeight, hideWidth]);
        //Debug Return
@@ -268,10 +276,10 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
 
         //tmp_percent = floor(itImage*100/size(listStartImages));
         //waitbar(tmp_percent/100, "Step 2/3 - Finding Image "+string(itImage)+"/"+string(size(listStartImages)), bar);
-        if ~(tmp_percent == percent) && modulo(tmp_percent, 10) == 0 then
+        //if ~(tmp_percent == percent) && modulo(tmp_percent, 10) == 0 then
             //percent = tmp_percent;
-           printf("Step 2/3 - Finding Images: %d percent\n", percent);
-        end
+           //printf("Step 2/3 - Finding Images: %d percent\n", percent);
+        //end
 
         heigthHideStart = listStartImages(itImage)(1);
         widthHideStart = listStartImages(itImage)(2);
@@ -286,22 +294,34 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
         listGreenHideImage(itImage) = list();
         listBlueHideImage(itImage) = list();
 
-        p_start = oneDimCoordStart;
-        p_end = oneDimCoordEnd;
-        if p_start < 0 then
-           p_decal = ((-1)*p_start);
-           p_end = p_end + p_decal;
-           p_start = 0;
-        end
+        //p_start = oneDimCoordStart;
+        //p_end = oneDimCoordEnd;
+        //p_dist_max = abs(p_end - p_start);
+
+        //p_start = p_start - p_decal
+        //p_end = p_end + p_decal
+        //if p_start < 0 then
+          // p_decal = ((-1)*p_start);
+          // p_end = p_end + p_decal;
+          // p_start = 0;
+        //end
+
+        //printf("p_dist_max = %d\n", p_dist_max);
+        //printf("oneDimCoordStart = %d oneDimCoordEnd = %d\n", oneDimCoordStart, oneDimCoordEnd);
 
         tmp_percent = 0;
         percent = 0;
 
         for coord = oneDimCoordStart : oneDimCoordEnd
-            if coord < 1 then
-               p_start = coord + p_decal;
-            end
-            tmp_percent = floor(p_start*100/p_end);
+            //if coord < 1 then
+            //p_dist = abs(p_end - coord);
+            //end
+            //if coord == oneDimCoordStart then
+            //   printf("p_dist = %d p_dist_max = %d\n", p_dist, p_dist_max);
+            //end
+
+            //tmp_percent = floor(p_dist*100/p_dist_max);
+            tmp_percent = floor((coord-oneDimCoordStart)*100/(oneDimCoordEnd-oneDimCoordStart));
             waitbar(tmp_percent/100, "Step 2/3 - Finding Image "+string(itImage)+"/"+string(size(listStartImages)), bar);
 
             for lsb=2 : nbLSB
@@ -570,6 +590,21 @@ function retStruct = check_header(x, y, listHeadersHeight, listHeadersWidth, ind
 
    //printf("dim %d:%d\n", numHeaderWidth, numHeaderHeight)
 
+   /*
+   if numHeaderHeight <= 0 || numHeaderWidth <= 0 then
+      printf("header height out of range\n");
+   end
+
+   if numHeaderHeight > heightHost || numHeaderWidth > widthHost then
+      printf("header bigger than host\n");
+   end
+
+   if ~(octSize == size(listHeadersHeight(indexHeader))) || ~(octSize == size(listHeadersWidth(indexHeader))) then
+      printf("Wrong size\n");
+      printf("sizeH = %d sizeW = %d\n", size(listHeadersHeight(indexHeader)), size(listHeadersWidth(indexHeader)));
+   end
+   */
+
    if numHeaderHeight <= 0 || numHeaderWidth <= 0 || numHeaderHeight > heightHost || numHeaderWidth > widthHost || ~(octSize == size(listHeadersHeight(indexHeader))) || ~(octSize == size(listHeadersWidth(indexHeader))) then
      //printf("supp %d\n",  numHeaderHeight);
      listHeadersHeight(indexHeader) = null();
@@ -588,6 +623,7 @@ function retStruct = check_header(x, y, listHeadersHeight, listHeadersWidth, ind
    retStruct.listHeadersWidth = listHeadersWidth;
    retStruct.indexHeader = indexHeader + 1;
    retStruct.listCoordHeadersStart = listCoordHeadersStart;
+   //disp(listCoordHeadersStart);
    retStruct = resume(retStruct);
 endfunction
 
@@ -610,6 +646,7 @@ function listStartImages = getListStartImages(coord)
     listStartImages(indexList) = list(retCoord.y, retCoord.x);
 
     oneDimCoord = x + (widthHost * (y - 1));
+    oneDimCoord = oneDimCoord + (octSize/(nbLSB-1));
 
     disp(oneDimCoord);
 
@@ -629,11 +666,13 @@ function listStartImages = getListStartImages(coord)
     end
 
     oneDimCoord = x + (widthHost * (y - 1));
+    oneDimCoord = oneDimCoord + (octSize/(nbLSB-1));
 
     while %t
         indexList = indexList + 1;
         oneDimImageStart = oneDimCoord + (hideWidth * hideHeight) + (octSize/(nbLSB-1));
-        if (oneDimImageStart + (hideWidth * hideHeight) - 1 <= (widthHost * heightHost)) then
+        //if (oneDimImageStart + (hideWidth * hideHeight) - 1 <= (widthHost * heightHost)) then
+        if oneDimImageStart >= (widthHost * heightHost) then
             oneDimCoord = oneDimImageStart;
         else
             indexList = indexList - 1;

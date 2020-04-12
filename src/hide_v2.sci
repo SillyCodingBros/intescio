@@ -1,4 +1,11 @@
-function[resultImage] = hideImage(imageHost,imageHide,nbLSB,nbImage)
+function[resultImage] = hideImage(imageHost,imageHide)
+
+    nbLSB = 4;
+
+    nbImage = ceil((size(imageHost,1)*size(imageHost,2))/(size(imageHide,1)*size(imageHide,2)+ceil(32/(nbLSB-1))));
+    if nbImage == 0 then
+        nbImage = 1
+    end
 
     imageHost = im2uint8(imageHost);
     heightHost = size(imageHost,1);
@@ -11,7 +18,7 @@ function[resultImage] = hideImage(imageHost,imageHide,nbLSB,nbImage)
     header = [uint32(widthHide),uint32(heightHide)];
 
     sizeHide = (heightHide*widthHide+ceil(32/(nbLSB-1)))*nbImage;
-    
+
     isHeader = %t;
     hideEnd = %f;
     bitHeader = 1;
