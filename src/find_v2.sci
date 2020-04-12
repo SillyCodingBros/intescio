@@ -34,6 +34,8 @@ function[resultImage] = findImage(imageHost)
 
     percent = 0;
     tmp_percent = 0;
+    eta = 0
+    svg = 0
 
     continue_choice = %t;
 
@@ -46,6 +48,7 @@ function[resultImage] = findImage(imageHost)
     bar = waitbar(0, "Step 1/3 - Finding Data...");
 
     //printf("size host %d\n", widthHide);
+    timer();
 
     for y=1 : heightHost
         if (~(size(listHeadersHeight) == size(listHeadersWidth)) || size(listHeadersHeight) > floor((heightHost*widthHost)/64)) && continue_choice then
@@ -58,7 +61,14 @@ function[resultImage] = findImage(imageHost)
             continue_choice = %f;
         end
         tmp_percent = floor(y*100/heightHost);
-        waitbar(tmp_percent/100, "Step 1/3 - Finding Data...", bar);
+        if ~(svg == tmp_percent) then
+            time = timer();
+            eta = floor((time/(tmp_percent-svg))*(100-tmp_percent))
+        end
+
+        svg = tmp_percent;
+
+        waitbar(tmp_percent/100, "Step 1/3 - Finding Data..."+" - ETA: "+eta2string(eta), bar);
         if ~(tmp_percent == percent) && modulo(tmp_percent, 10) == 0 then
             percent = tmp_percent;
            printf("Step 1/3 - Finding Data: %d percent\n", percent);
@@ -130,7 +140,7 @@ function[resultImage] = findImage(imageHost)
     listHeadersWidth = retStruct.listHeadersWidth;
     indexHeader = retStruct.indexHeader;
     listCoordHeadersStart = retStruct.listCoordHeadersStart;
-    printf("list coord %d %d\n", listCoordHeadersStart(1)(1), listCoordHeadersStart(1)(2));
+    //printf("list coord %d %d\n", listCoordHeadersStart(1)(1), listCoordHeadersStart(1)(2));
     printf("listCoordHeadersStart size = %d\n", size(listCoordHeadersStart));
 
     waitbar(100, "Step 1/3 - Processing...", bar);
@@ -311,6 +321,10 @@ function[resultImage] = findImage(imageHost)
 
         tmp_percent = 0;
         percent = 0;
+        svg = 0;
+        eta = 0
+
+        timer();
 
         for coord = oneDimCoordStart : oneDimCoordEnd
             //if coord < 1 then
@@ -322,7 +336,17 @@ function[resultImage] = findImage(imageHost)
 
             //tmp_percent = floor(p_dist*100/p_dist_max);
             tmp_percent = floor((coord-oneDimCoordStart)*100/(oneDimCoordEnd-oneDimCoordStart));
-            waitbar(tmp_percent/100, "Step 2/3 - Finding Image "+string(itImage)+"/"+string(size(listStartImages)), bar);
+            if ~(svg == tmp_percent) then
+                time = timer();
+                eta = floor((time/(tmp_percent-svg))*(100-tmp_percent))
+            end
+
+            svg = tmp_percent;
+
+            waitbar(tmp_percent/100, "Step 2/3 - Finding Image "+string(itImage)+"/"+string(size(listStartImages))+" - ETA: "+eta2string(eta), bar);
+
+            y = ceil(coord/widthHost);
+            x = coord - ((y - 1) * widthHost);
 
             for lsb=2 : nbLSB
                 if y < 1 || y > heightHost || x < 1 || x > widthHost then
@@ -421,6 +445,8 @@ function[resultImage] = findImage(imageHost)
     // Comp Image Layer & Add to result image
     percent = 0;
     tmp_percent = 0;
+    eta = 0;
+    svg = 0;
 
     pix2get = hideHeight * hideWidth;
     one = 0;
@@ -436,9 +462,18 @@ function[resultImage] = findImage(imageHost)
 
     waitbar(0, "Step 3/3 - Rebuilding Image...", bar);
 
+    timer();
+
     for y=1 : hideHeight
         tmp_percent = floor(y*100/hideHeight);
-        waitbar(tmp_percent/100, "Step 3/3 - Rebuilding Image...", bar);
+        if ~(svg == tmp_percent) then
+            time = timer();
+            eta = floor((time/(tmp_percent-svg))*(100-tmp_percent))
+        end
+
+        svg = tmp_percent;
+
+        waitbar(tmp_percent/100, "Step 3/3 - Rebuilding Image..."+" - ETA: "+eta2string(eta), bar);
         if ~(tmp_percent == percent) && modulo(tmp_percent, 10) == 0 then
             percent = tmp_percent;
            printf("Step 3/3 - Rebuilding Image: %d percent\n", percent);
@@ -672,7 +707,7 @@ function listStartImages = getListStartImages(coord)
         indexList = indexList + 1;
         oneDimImageStart = oneDimCoord + (hideWidth * hideHeight) + (octSize/(nbLSB-1));
         //if (oneDimImageStart + (hideWidth * hideHeight) - 1 <= (widthHost * heightHost)) then
-        if oneDimImageStart >= (widthHost * heightHost) then
+        if oneDimImageStart <= (widthHost * heightHost) then
             oneDimCoord = oneDimImageStart;
         else
             indexList = indexList - 1;
@@ -686,4 +721,39 @@ function listStartImages = getListStartImages(coord)
 
     listStartImages = resume(listStartImages);
 
+endfunction
+
+function strETA = eta2string(eta)
+   minETA = floor(eta/60);
+   hETA = floor(minETA/60);
+   jETA = floor(hETA/24);
+
+   strETA = "";
+   if jETA then
+      jETAString = "days "
+      if jETA < 2 then
+        jETAString = "day "
+      end
+      strETA = strETA + string(jETA) + jETAString
+   end
+   if hETA then
+       hETAString = " hours "
+       if hETA < 2 then
+         hETAString = " hour "
+       end
+      strETA = strETA + string(hETA) + hETA
+   end
+   if minETA then
+       minETAString = " minutes "
+       if minETA < 2 then
+         minETAString = " minute "
+       end
+      strETA = strETA + string(minETA) + minETAString
+      eta = modulo(eta,60);
+   end
+   sETAString = " seconds"
+   if eta < 2 then
+     sETAString = " second"
+   end
+   strETA = strETA + string(eta) + sETAString
 endfunction
