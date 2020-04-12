@@ -15,9 +15,12 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
 
     listHeadersHeight = list();
     listHeadersWidth = list();
+    
     listRedHideImage = list();
     listGreenHideImage = list();
     listBlueHideImage = list();
+
+    listCoordHeadersStart = list();
 
     indexHeader = 0;
     indexRGB = 0;
@@ -30,6 +33,9 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
     continue_choice = %t;
 
     octSize = ceil(32/(nbLSB-1)) * (nbLSB-1);
+
+    lastHeaderX = 0;
+    lastHeaderY = 0;
 
     // Waitbar
     bar = waitbar(0, "Step 1/3 - Finding Data...");
@@ -72,31 +78,21 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
                //if x==1 then
                   //printf("%d:%d %d - %d \n", x, y, imageHost(y,x,1), bitget(imageHost(y,x,1), 1))
                //end
+
                indexHeader = indexHeader + 1;
                strHeaderHeight = ""
                strHeaderWidth = ""
+               //printf("before check index = %d\n", indexHeader);
                if indexHeader > 1 then
+                  //printf("Header ici %d\n", indexHeader-1)
+                  retStruct = check_header(lastHeaderX, lastHeaderY, listHeadersHeight, listHeadersWidth, indexHeader-1, listCoordHeadersStart);
+                  listHeadersHeight = retStruct.listHeadersHeight;
+                  listHeadersWidth = retStruct.listHeadersWidth;
+                  indexHeader = retStruct.indexHeader;
+                  listCoordHeadersStart = retStruct.listCoordHeadersStart;
+                  //printf("end check index = %d\n", indexHeader);
                   //sleep(1000)
-                  for headerSize=1 : size(listHeadersHeight(indexHeader-1))
-                    strHeaderHeight = strHeaderHeight + string(listHeadersHeight(indexHeader-1)(headerSize))
-                  end
-                  numHeaderHeight = bin2dec(strHeaderHeight);
 
-                  for headerSize=1 : size(listHeadersWidth(indexHeader-1))
-                    strHeaderWidth = strHeaderWidth + string(listHeadersWidth(indexHeader-1)(headerSize))
-                  end
-                  numHeaderWidth = bin2dec(strHeaderWidth);
-
-                  if numHeaderHeight <= 0 || numHeaderWidth <= 0 || numHeaderHeight > heightHost || numHeaderWidth > widthHost || ~(octSize == size(listHeadersHeight(indexHeader-1))) || ~(octSize == size(listHeadersWidth(indexHeader-1))) then
-                    //printf("supp %d\n",  numHeaderHeight);
-                    listHeadersHeight(indexHeader-1) = null();
-                    listHeadersWidth(indexHeader-1) = null();
-                    indexHeader = indexHeader - 1;
-                  else
-                    printf("height %d - %s\n", numHeaderHeight, strHeaderHeight);
-                    printf("width %d - %s\n", numHeaderWidth, strHeaderWidth);
-                    //sleep(1500);
-                  end
 
                   //[1,1] = list2vec(listHeadersHeight(indexHeader-1));
                   //tmp = tmp + string();
@@ -110,6 +106,8 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
 
                    //listHeadersHeight(indexHeader) = bitset(listHeadersHeight(indexHeader),indexBitHeader,bitget(imageHost(y,x,1), lsb));
                    if lsb==2 then
+                       lastHeaderX = x;
+                       lastHeaderY = y;
                       listHeadersHeight(indexHeader) = list(bitget(imageHost(y,x,1), lsb));
                       listHeadersWidth(indexHeader) = list(bitget(imageHost(y,x,2), lsb));
                    else
@@ -122,7 +120,17 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
        end
     end
 
+    retStruct = check_header(lastHeaderX, lastHeaderY, listHeadersHeight, listHeadersWidth, indexHeader, listCoordHeadersStart);
+    listHeadersHeight = retStruct.listHeadersHeight;
+    listHeadersWidth = retStruct.listHeadersWidth;
+    indexHeader = retStruct.indexHeader;
+    listCoordHeadersStart = retStruct.listCoordHeadersStart;
+    printf("list coord %d %d\n", listCoordHeadersStart(1)(1), listCoordHeadersStart(1)(2));
+    printf("listCoordHeadersStart size = %d\n", size(listCoordHeadersStart));
+
     waitbar(100, "Step 1/3 - Processing...", bar);
+
+    //listCoordEndHeaders = getHeaderEnds(listCoordHeadersStart(1));
 
     // Get header size Can Use Function rewrite
     hideHeight = 0; //uint32(0);
@@ -236,7 +244,7 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
     if hideHeight > 0 && hideWidth > 0 && hideHeight <= heightHost && hideWidth <= widthHost then
        resultImage = imresize(imageHost, [hideHeight, hideWidth]);
        //Debug Return
-       resultImage = resume(resultImage);
+       //resultImage = resume(resultImage);
     else
        messagebox("Error Corrupted Data", "Error", "error")
        //Close waitbar
@@ -249,6 +257,75 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
     tmp_percent = 0;
     percent = 0;
 
+    listStartImages = getListStartImages(listCoordHeadersStart(1));
+    /*
+    for itImage=1 : size(listStartImages)
+        disp(listStartImages(itImage))
+    end
+    */
+
+    for itImage=1 : size(listStartImages)
+
+        //tmp_percent = floor(itImage*100/size(listStartImages));
+        //waitbar(tmp_percent/100, "Step 2/3 - Finding Image "+string(itImage)+"/"+string(size(listStartImages)), bar);
+        if ~(tmp_percent == percent) && modulo(tmp_percent, 10) == 0 then
+            //percent = tmp_percent;
+           printf("Step 2/3 - Finding Images: %d percent\n", percent);
+        end
+
+        heigthHideStart = listStartImages(itImage)(1);
+        widthHideStart = listStartImages(itImage)(2);
+
+        oneDimCoordStart = widthHideStart + (widthHost * (heigthHideStart - 1));
+        oneDimCoordEnd = oneDimCoordStart + (hideWidth * hideHeight) - 1;
+
+        //yEnd = ceil(oneDimCoordEnd/widthHost);
+        //xEnd = oneDimCoordEnd - ((yEnd - 1) * widthHost);
+
+        listRedHideImage(itImage) = list();
+        listGreenHideImage(itImage) = list();
+        listBlueHideImage(itImage) = list();
+
+        p_start = oneDimCoordStart;
+        p_end = oneDimCoordEnd;
+        if p_start < 0 then
+           p_decal = ((-1)*p_start);
+           p_end = p_end + p_decal;
+           p_start = 0;
+        end
+
+        tmp_percent = 0;
+        percent = 0;
+
+        for coord = oneDimCoordStart : oneDimCoordEnd
+            if coord < 1 then
+               p_start = coord + p_decal;
+            end
+            tmp_percent = floor(p_start*100/p_end);
+            waitbar(tmp_percent/100, "Step 2/3 - Finding Image "+string(itImage)+"/"+string(size(listStartImages)), bar);
+
+            for lsb=2 : nbLSB
+                if y < 1 || y > heightHost || x < 1 || x > widthHost then
+                    //disp("if\n")
+                    listRedHideImage(itImage)($+1) = 1;
+                    listGreenHideImage(itImage)($+1) = 1;
+                    listBlueHideImage(itImage)($+1) = 1;
+                    //disp("if pass\n")
+                else
+                    //disp("else\n")
+
+                    y = ceil(coord/widthHost);
+                    x = coord - ((y - 1) * widthHost);
+
+                    listRedHideImage(itImage)($+1) = bitget(imageHost(y,x,1), lsb);
+                    listGreenHideImage(itImage)($+1) = bitget(imageHost(y,x,2), lsb);
+                    listBlueHideImage(itImage)($+1) = bitget(imageHost(y,x,3), lsb);
+                    //disp("else pass\n")
+                end
+            end
+        end
+    end
+/*
     for y=1 : heightHost
         tmp_percent = floor(y*100/heightHost);
         waitbar(tmp_percent/100, "Step 2/3 - Finding Images...", bar);
@@ -320,7 +397,7 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
             end
         end
     end
-
+*/
     // Comp Image Layer & Add to result image
     percent = 0;
     tmp_percent = 0;
@@ -475,5 +552,99 @@ function[resultImage] = findImage(imageHost,nbLSB,nbImage)
     close(bar);
 
     //disp(listRedHideImage(1))
+
+endfunction
+
+function retStruct = check_header(x, y, listHeadersHeight, listHeadersWidth, indexHeader, listCoordHeadersStart)
+    //disp("bonjour\n");
+    //printf("check args %d:%d %d\n", x, y, indexHeader)
+   for headerSize=1 : size(listHeadersHeight(indexHeader))-1
+     strHeaderHeight = strHeaderHeight + string(listHeadersHeight(indexHeader)(headerSize))
+   end
+   numHeaderHeight = bin2dec(strHeaderHeight);
+
+   for headerSize=1 : size(listHeadersWidth(indexHeader))-1
+     strHeaderWidth = strHeaderWidth + string(listHeadersWidth(indexHeader)(headerSize))
+   end
+   numHeaderWidth = bin2dec(strHeaderWidth);
+
+   //printf("dim %d:%d\n", numHeaderWidth, numHeaderHeight)
+
+   if numHeaderHeight <= 0 || numHeaderWidth <= 0 || numHeaderHeight > heightHost || numHeaderWidth > widthHost || ~(octSize == size(listHeadersHeight(indexHeader))) || ~(octSize == size(listHeadersWidth(indexHeader))) then
+     //printf("supp %d\n",  numHeaderHeight);
+     listHeadersHeight(indexHeader) = null();
+     listHeadersWidth(indexHeader) = null();
+     indexHeader = indexHeader - 1;
+   else
+
+      listCoordHeadersStart(indexHeader) = list(y,x);
+      //printf("coord %d %d\n", x,y);
+
+     printf("height %d - %s\n", numHeaderHeight, strHeaderHeight);
+     printf("width %d - %s\n", numHeaderWidth, strHeaderWidth);
+     //sleep(1500);
+   end
+   retStruct.listHeadersHeight = listHeadersHeight;
+   retStruct.listHeadersWidth = listHeadersWidth;
+   retStruct.indexHeader = indexHeader + 1;
+   retStruct.listCoordHeadersStart = listCoordHeadersStart;
+   retStruct = resume(retStruct);
+endfunction
+
+function listStartImages = getListStartImages(coord)
+    listStartImages = list();
+    indexList = 1;
+    x = coord(2);
+    y  = coord(1);
+
+    printf("header start coord %d:%d\n", x, y);
+
+    oneDimCoord = x + (widthHost * (y - 1));
+    oneDimCoord = oneDimCoord + (octSize/(nbLSB-1));
+
+    retCoord.y = ceil(oneDimCoord/widthHost);
+    retCoord.x = oneDimCoord - ((retCoord.y - 1) * widthHost);
+
+    printf("image start coord %d:%d\n", retCoord.x, retCoord.y);
+
+    listStartImages(indexList) = list(retCoord.y, retCoord.x);
+
+    oneDimCoord = x + (widthHost * (y - 1));
+
+    disp(oneDimCoord);
+
+    while %t
+        indexList = indexList + 1;
+        oneDimImageStart = oneDimCoord - (octSize/(nbLSB-1)) - (hideWidth * hideHeight);
+        if (oneDimCoord - (octSize/(nbLSB-1)) - 1) > 0 then
+            oneDimCoord = oneDimImageStart;
+        else
+            indexList = indexList - 1;
+            break;
+        end
+        retCoord.y = ceil(oneDimCoord/widthHost);
+        retCoord.x = oneDimCoord - ((retCoord.y - 1) * widthHost);
+        printf("pre add image start %d:%d\n",retCoord.x, retCoord.y);
+        listStartImages(indexList) = list(retCoord.y, retCoord.x);
+    end
+
+    oneDimCoord = x + (widthHost * (y - 1));
+
+    while %t
+        indexList = indexList + 1;
+        oneDimImageStart = oneDimCoord + (hideWidth * hideHeight) + (octSize/(nbLSB-1));
+        if (oneDimImageStart + (hideWidth * hideHeight) - 1 <= (widthHost * heightHost)) then
+            oneDimCoord = oneDimImageStart;
+        else
+            indexList = indexList - 1;
+            break;
+        end
+        retCoord.y = ceil(oneDimCoord/widthHost);
+        retCoord.x = oneDimCoord - ((retCoord.y - 1) * widthHost);
+        printf("post add image start %d:%d\n", retCoord.x, retCoord.y);
+        listStartImages(indexList) = list(retCoord.y, retCoord.x);
+    end
+
+    listStartImages = resume(listStartImages);
 
 endfunction
