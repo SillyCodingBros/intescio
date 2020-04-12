@@ -37,14 +37,25 @@ function[resultImage] = hideImage(imageHost,imageHide)
     // Waitbar
     percent = 0;
     tmp_percent = 0;
+    svg = 0;
+    eta = 0;
     bar = waitbar(0, "Hiding Data...");
+
+    timer();
 
     for y=1 : heightResultImage
         //if nbImage == 0 then
            //break;
         //end
         tmp_percent = floor(y*100/heightResultImage);
-        waitbar(tmp_percent/100, "Hiding Data...", bar);
+        if ~(svg == tmp_percent) then
+            time = timer();
+            eta = floor((time/(tmp_percent-svg))*(100-tmp_percent))
+        end
+
+        svg = tmp_percent;
+
+        waitbar(tmp_percent/100, "Hiding Data..."+" - ETA: "+eta2string(eta), bar);
         if ~(tmp_percent == percent) && modulo(tmp_percent, 10) == 0 then
             percent = tmp_percent;
            printf("Hiding Data: %d percent\n", percent);
@@ -160,4 +171,39 @@ function res_val = hiding_val(host_val, hide_val, nbLSB)
       //printf("\n")
    end
    //printf("\n\nhiding_val : res_val = %d\n", res_val)
+endfunction
+
+function strETA = eta2string(eta)
+   minETA = floor(eta/60);
+   hETA = floor(minETA/60);
+   jETA = floor(hETA/24);
+
+   strETA = "";
+   if jETA then
+      jETAString = "days "
+      if jETA < 2 then
+        jETAString = "day "
+      end
+      strETA = strETA + string(jETA) + jETAString
+   end
+   if hETA then
+       hETAString = " hours "
+       if hETA < 2 then
+         hETAString = " hour "
+       end
+      strETA = strETA + string(hETA) + hETA
+   end
+   if minETA then
+       minETAString = " minutes "
+       if minETA < 2 then
+         minETAString = " minute "
+       end
+      strETA = strETA + string(minETA) + minETAString
+      eta = modulo(eta,60);
+   end
+   sETAString = " seconds"
+   if eta < 2 then
+     sETAString = " second"
+   end
+   strETA = strETA + string(eta) + sETAString
 endfunction
