@@ -27,8 +27,8 @@ handles.goToFindImage=uicontrol(mainFigure,'unit','normalized','BackgroundColor'
 handles.image1= newaxes(mainFigure);handles.image1.margins = [ 0 0 0 0];handles.image1.axes_bounds = [0.0195473,0.0218978,0.4526749,0.4361314];handles.image1.auto_clear = 'on';handles.image1.visible = 'off';
 handles.image2= newaxes(mainFigure);handles.image2.margins = [ 0 0 0 0];handles.image2.axes_bounds = [0.5295473,0.020073,0.4526749,0.4361314];handles.image2.auto_clear = 'on';handles.image2.visible = 'off';
 handles.resultImage= newaxes(mainFigure);handles.resultImage.margins = [ 0 0 0 0];handles.resultImage.axes_bounds = [0.2785185,0.530073,0.4526749,0.4361314];handles.resultImage.auto_clear = 'on';handles.resultImage.visible = 'off';
-handles.hasImage1 = %F;
-handles.hasImage2 = %F;
+handles.hasImage1 = %f;
+handles.hasImage2 = %f;
 
 // Load Image Buttons
 handles.loadImage1Button=uicontrol(mainFigure,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.022982,0.4623144,0.1760925,0.0676856],'Relief','default','SliderStep',[0.01,0.1],'String','Load Image ','Style','pushbutton','Value',[0],'VerticalAlignment','middle','Visible','off','Tag','loadImage1Button','Callback','loadImage1Button_callback(handles)');
@@ -91,6 +91,7 @@ function goToHideImage_callback(handles)
 handles.title.visible = 'off';
 handles.goToHideImage.visible = 'off';
 handles.goToFindImage.visible = 'off';
+
 handles.image1.visible = 'on';
 handles.image2.visible = 'on';
 handles.resultImage.visible = 'on';
@@ -115,6 +116,7 @@ function goToFindImage_callback(handles)
 handles.title.visible = 'off';
 handles.goToHideImage.visible = 'off';
 handles.goToFindImage.visible = 'off';
+
 handles.prevHostImage.visible = 'on';
 handles.prevHideImage.visible = 'on';
 handles.loadHostImageButton.visible = 'on';
@@ -140,9 +142,12 @@ hostImage = imread(fn);
 sca(handles.image1);
 imshow(hostImage);
 
+handles.saveResultButton.Enable = 'off';
+delete(handles.resultImage.children);
+
 handles.hostImage = hostImage;
 
-handles.hasImage1 = %T;
+handles.hasImage1 = %t;
 if handles.hasImage2 then
     //redun_opti = floor((size(handles.hostImage,1)*size(handles.hostImage,2))/(size(handles.hideImage,1)*size(handles.hideImage,2)+ceil(32/(handles.h_LSBUsedSpin.value-1))));
     //if redun_opti == 0 then
@@ -167,9 +172,12 @@ hideImage = imread(fn);
 sca(handles.image2);
 imshow(hideImage);
 
+handles.saveResultButton.Enable = 'off';
+delete(handles.resultImage.children);
+
 handles.hideImage = hideImage;
 
-handles.hasImage2 = %T;
+handles.hasImage2 = %t;
 if handles.hasImage1 then
     //redun_opti = floor((size(handles.hostImage,1)*size(handles.hostImage,2))/(size(handles.hideImage,1)*size(handles.hideImage,2)+ceil(32/(handles.h_LSBUsedSpin.value-1))));
     //if redun_opti == 0 then
@@ -209,10 +217,9 @@ endfunction
 
 function hideDataButton_callback(handles)
 //Write your callback for  hideDataButton  here
-
+handles.hideDataButton.Enable = 'off';
 //printf("host image = %d %d",size(handles.hostImage,1),size(handles.hostImage,2));
-
-exec('C:\Users\Thomas\Documents\Scilab\intescio\src\hide_v2.sci', -1)
+exec('C:\Users\Thomas\Documents\Scilab\intescio\src\hide_v3.sci', -1);
 //exec('C:\Users\bobbywan\dev\scilab\intescio\src\hide_v2.sci', -1)
 handles.resultHideImage = hideImage(handles.hostImage, handles.hideImage);
 sca(handles.resultImage);
@@ -229,17 +236,17 @@ function saveResultButton_callback(handles)
 //Write your callback for  saveResultButton  here
 fn = uiputfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";],'C:\Users\Thomas\Documents\Scilab\img\results', "Choose a file name");
 //fn = uiputfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";],'C:\Users\bobbywan\Images', "Choose a file name");
-ext = list(".bmp", ".dib", ".jpeg", ".jpg", ".jpe", ".png", ".pbm", ".pgm", ".ppm", ".sr", ".ras", ".tiff", ".tif")
+ext = list(".bmp", ".dib", ".jpeg", ".jpg", ".jpe", ".png", ".pbm", ".pgm", ".ppm", ".sr", ".ras", ".tiff", ".tif");
 for x=1 : size(ext)
     if strstr(fn, ext(x)) == ext(x) then
-        disp(fn)
+        disp(fn);
         imwrite(handles.resultHideImage, fn);
         return;
     end
 end
 
 fn = fn + ".png";
-disp(fn)
+disp(fn);
 imwrite(handles.resultHideImage, fn);
 endfunction
 
@@ -248,32 +255,42 @@ function h_goHome_callback(handles)
 //Write your callback for  goHome  here
 
 //Reset Variables
-handles.hasImage1 = %F;
-handles.hasImage2 = %F;
+handles.hasImage1 = %f;
+handles.hasImage2 = %f;
+
+handles.image1.visible = 'off';
+handles.image2.visible = 'off';
+handles.resultImage.visible = 'off';
+
+delete(handles.image1.children);
+delete(handles.image2.children);
+delete(handles.resultImage.children);
+
+handles.loadImage1Button.visible = 'off';
+handles.loadImage2Button.visible = 'off';
+
 handles.hideDataButton.Enable = 'off';
+handles.hideDataButton.visible = 'off';
+handles.saveResultButton.Enable = 'off';
+handles.saveResultButton.visible = 'off';
+handles.h_goHome.visible = 'off';
+
 //handles.h_imageRedundancySpin.Enable = 'off';
 //handles.h_imageRedundancySpin.Value = [1];
 //handles.h_LSBUsedSpin.Enable = 'off';
 //handles.h_LSBUsedSpin.Value = [4];
-
-//changing to home GUI
 //mainFigure = menuFigure;
 //mainFigure.visible = 'on';
-handles.image1.visible = 'off';
-handles.image2.visible = 'off';
-handles.resultImage.visible = 'off';
-handles.loadImage1Button.visible = 'off';
-handles.loadImage2Button.visible = 'off';
-handles.loadImage2Button.visible = 'off';
+
+//handles.loadImage2Button.visible = 'off';
 //handles.h_imageRedundancyText.visible = 'off';
 //handles.h_imageRedundancyRecommendedText.visible = 'off';
 //handles.h_imageRedundancySpin.visible = 'off';
 //handles.h_leastSignificantBitsText.visible = 'off';
 //handles.h_leastSignificantBitsText.visible = 'off';
 //handles.h_LSBUsedSpin.visible = 'off';
-handles.hideDataButton.visible = 'off';
-handles.saveResultButton.visible = 'off';
-handles.h_goHome.visible = 'off';
+
+//changing to home GUI
 handles.title.visible = 'on';
 handles.goToHideImage.visible = 'on';
 handles.goToFindImage.visible = 'on';
@@ -289,6 +306,7 @@ function loadHostImageButton_callback(handles)
 
 fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], 'C:\Users\Thomas\Documents\Scilab\img\results', "Choose a file");
 //fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], 'C:\Users\bobbywan\Images', "Choose a file");
+
 hostImage2Find = imread(fn);
 sca(handles.prevHostImage);
 imshow(hostImage2Find);
@@ -296,6 +314,8 @@ imshow(hostImage2Find);
 handles.hostImage2Find = hostImage2Find;
 
 handles.findDataButton.Enable = 'on';
+handles.saveHideImageButton.Enable = 'off';
+delete(handles.prevHideImage.children);
 //handles.f_imageRedundancySpin.Enable = 'on';
 //handles.f_LSBUsedSpin.Enable = 'on';
 
@@ -304,7 +324,10 @@ endfunction
 
 function findDataButton_callback(handles)
 //Write your callback for  findDataButton  here
-exec('C:\Users\Thomas\Documents\Scilab\intescio\src\find_v2.sci', -1)
+handles.findDataButton.Enable = 'off';
+handles.saveHideImageButton.Enable = 'off';
+
+exec('C:\Users\Thomas\Documents\Scilab\intescio\src\find_v3.sci', -1);
 //exec('C:\Users\bobbywan\dev\scilab\intescio\src\find_v2.sci', -1)
 handles.resultFindImage = findImage(handles.hostImage2Find);
 sca(handles.prevHideImage);
@@ -317,17 +340,17 @@ function saveHideImageButton_callback(handles)
 //Write your callback for  saveResultButton  here
 fn = uiputfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";],'C:\Users\Thomas\Documents\Scilab\img\results', "Choose a file name");
 //fn = uiputfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";],'C:\Users\bobbywan\Images', "Choose a file name");
-ext = list(".bmp", ".dib", ".jpeg", ".jpg", ".jpe", ".png", ".pbm", ".pgm", ".ppm", ".sr", ".ras", ".tiff", ".tif")
+ext = list(".bmp", ".dib", ".jpeg", ".jpg", ".jpe", ".png", ".pbm", ".pgm", ".ppm", ".sr", ".ras", ".tiff", ".tif");
 for x=1 : size(ext)
     if strstr(fn, ext(x)) == ext(x) then
-        disp(fn)
+        disp(fn);
         imwrite(handles.resultFindImage, fn);
         return;
     end
 end
 
 fn = fn + ".png";
-disp(fn)
+disp(fn);
 imwrite(handles.resultFindImage, fn);
 endfunction
 
@@ -335,23 +358,30 @@ function f_goHome_callback(handles)
 //Write your callback for  goHome  here
 
 //Reset Variables
+handles.prevHostImage.visible = 'off';
+handles.prevHideImage.visible = 'off';
+delete(handles.prevHostImage.children);
+delete(handles.prevHideImage.children);
+
+handles.loadHostImageButton.visible = 'off';
+handles.saveHideImageButton.visible = 'off';
+handles.saveHideImageButton.Enable = 'off';
+handles.findDataButton.visible = 'off';
 handles.findDataButton.Enable = 'off';
+
+handles.findDataButton.visible = 'off';
+handles.f_goHome.visible = 'off';
+
 //handles.f_imageRedundancySpin.Enable = 'off';
 //handles.f_imageRedundancySpin.Value = [1];
 //handles.f_LSBUsedSpin.Enable = 'off';
 //handles.f_LSBUsedSpin.Value = [4];
-
-//changing to home GUI
-handles.prevHostImage.visible = 'off';
-handles.prevHideImage.visible = 'off';
-handles.loadHostImageButton.visible = 'off';
-handles.saveHideImageButton.visible = 'off';
-handles.findDataButton.visible = 'off';
-handles.f_goHome.visible = 'off';
 //handles.f_imageRedundancyText.visible = 'off';
 //handles.f_imageRedundancySpin.visible = 'off';
 //handles.f_leastSignificantBitsText.visible = 'off';
 //handles.f_LSBUsedSpin.visible = 'off';
+
+//changing to home GUI
 handles.title.visible = 'on';
 handles.goToHideImage.visible = 'on';
 handles.goToFindImage.visible = 'on';
