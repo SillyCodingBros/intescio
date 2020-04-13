@@ -1,6 +1,3 @@
-/*
-TODO header != 32
-*/
 function[resultImage] = hideImage(imageHost,imageHide)
 
     nbLSB = 4;
@@ -127,7 +124,7 @@ function[resultImage] = hideImage(imageHost,imageHide)
                         //    end
                         //else
                             resultImage(y,x,1) = bitset(resultImage(y,x,1), bit, bitget(heightHide,bitHeader));
-                            resultImage(y,x,2) = bitset(resultImage(y,x,2), bit, bitget(widthHide,-bitHeader));
+                            resultImage(y,x,2) = bitset(resultImage(y,x,2), bit, bitget(widthHide,bitHeader));
                             //printf("\n%d:%d - ",x,y)
                             //printf("bitheader = %d - ", bitHeader)
                             //printf("bitget = %d", bitget(heightHide,33-bitHeader))
