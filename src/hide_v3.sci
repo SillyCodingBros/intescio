@@ -2,7 +2,24 @@ function[resultImage] = hideImage(imageHost,imageHide)
 
     nbLSB = 4;
 
+    if size(imageHost, 3) == 1 then
+       layer = im2uint8(imageHost);
+       tmpHost(:,:,1) = layer;
+       tmpHost(:,:,2) = layer;
+       tmpHost(:,:,3) = layer;
+       imageHost = tmpHost;
+    end
+
+    if size(imageHide, 3) == 1 then
+       layer = im2uint8(imageHide);
+       tmpHide(:,:,1) = layer;
+       tmpHide(:,:,2) = layer;
+       tmpHide(:,:,3) = layer;
+       imageHide = tmpHide;
+    end
+
     imageHost = im2uint8(imageHost);
+    imageHide = im2uint8(imageHide);
     heightHost = size(imageHost,1);
     widthHost = size(imageHost,2);
 
@@ -31,6 +48,13 @@ function[resultImage] = hideImage(imageHost,imageHide)
     end
 
     resultImage = imresize(imageHost,coef);
+    if size(resultImage,3) == 4 then
+        tmpResult(:,:,1) = resultImage(:,:,1);
+        tmpResult(:,:,2) = resultImage(:,:,2);
+        tmpResult(:,:,3) = resultImage(:,:,3);
+        resultImage = tmpResult;
+    end
+
     heightResultImage = size(resultImage,1);
     widthResultImage = size(resultImage,2);
 /*
@@ -73,7 +97,7 @@ function[resultImage] = hideImage(imageHost,imageHide)
         //printf("y=%d/%d\n",y,heightResultImage)
         for x=1 : widthResultImage
 
-            for layer=1 : size(resultImage,3)
+            for layer=1 : 3//size(resultImage,3)
                 if isHeader && modulo(resultImage(y,x,layer), uint8(2)) == 0 then
                     resultImage(y,x,layer) = resultImage(y,x,layer) + 1;
                     //disp(imageResult(y,x,layer), 'imageResult header was even');
@@ -86,18 +110,18 @@ function[resultImage] = hideImage(imageHost,imageHide)
 
             if ~isHeader then
                 /*if nbImage > 0 then*/
-                   for layer=1 : size(resultImage,3)
-                       if layer <= size(image2Hide,3) then
+                   for layer=1 : 3//size(resultImage,3)
+                       //if layer <= size(image2Hide,3) then
                            //resultImage(y,x,layer) = bitset(resultImage(y,x,layer), bit, bitget(imageHide(ceil(indexImageHide/widthHide),modulo(indexImageHide-1,widthHide)+1,layer),9-bit))
                            //if layer == 1 then
                             //printf("%d <-- %d\n", resultImage(y,x,layer), imageHide(ceil(indexImageHide/widthHide),modulo(indexImageHide-1,widthHide)+1,layer))
                            //end
-                           resultImage(y,x,layer) = hiding_val(resultImage(y,x,layer), image2Hide(ceil(indexImageHide/widthHide),modulo(indexImageHide-1,widthHide)+1,layer), nbLSB);
+                        resultImage(y,x,layer) = hiding_val(resultImage(y,x,layer), image2Hide(ceil(indexImageHide/widthHide),modulo(indexImageHide-1,widthHide)+1,layer), nbLSB);
                            //if layer == 1 then
                             //printf("res = %d\n", resultImage(y,x,layer))
                            //end
 
-                       end
+                       //end
                    end
                 /*end*/
 
