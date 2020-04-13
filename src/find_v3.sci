@@ -361,11 +361,11 @@ function[resultImage] = findImage(imageHost)
             for lsb=2 : nbLSB
                 indexBit = indexBit + 1;
 
-                if y < 1 || y > heightHost || x < 1 || x > widthHost then
+                if y > heightHost || x > widthHost then
                     //disp("if\n")
-                    listRedHideImage(indexBit)($+1) = 1;
-                    listGreenHideImage(indexBit)($+1) = 1;
-                    listBlueHideImage(indexBit)($+1) = 1;
+                    listRedHideImage(indexBit)(itImage) = 1;
+                    listGreenHideImage(indexBit)(itImage) = 1;
+                    listBlueHideImage(indexBit)(itImage) = 1;
                     //disp("if pass\n")
                 else
                     //disp("else\n")
@@ -373,9 +373,13 @@ function[resultImage] = findImage(imageHost)
                     y = ceil(coord/widthHost);
                     x = coord - ((y - 1) * widthHost);
 
-                    listRedHideImage(indexBit)($+1) = bitget(imageHost(y,x,1), lsb);
-                    listGreenHideImage(indexBit)($+1) = bitget(imageHost(y,x,2), lsb);
-                    listBlueHideImage(indexBit)($+1) = bitget(imageHost(y,x,3), lsb);
+                    listRedHideImage(indexBit)(itImage) = bitget(imageHost(y,x,1), lsb);
+                    listGreenHideImage(indexBit)(itImage) = bitget(imageHost(y,x,2), lsb);
+                    listBlueHideImage(indexBit)(itImage) = bitget(imageHost(y,x,3), lsb);
+
+                    //printf("red coord [%d,%d] bit = %d\n", x, y, bitget(imageHost(y,x,1), lsb))
+                    //printf("green coord [%d,%d] bit = %d\n", x, y, bitget(imageHost(y,x,2), lsb))
+                    //printf("blue coord [%d,%d] bit = %d\n", x, y, bitget(imageHost(y,x,3), lsb))
                     //disp("else pass\n")
                 end
             end
@@ -476,6 +480,11 @@ function[resultImage] = findImage(imageHost)
 
     timer();
 
+    //disp(listRedHideImage(1))
+    //disp(listRedHideImage(42))
+    //disp(listRedHideImage(84))
+    //disp(listRedHideImage(10250))
+
     for oneDimCoord=1 : hideWidth*hideHeight
         //timer
 
@@ -488,20 +497,26 @@ function[resultImage] = findImage(imageHost)
         svg = tmp_percent;
 
         waitbar(tmp_percent/100, "Step 3/3 - Rebuilding Image..."+" - ETA: "+eta2string(eta), bar);
-        if ~(tmp_percent == percent) && modulo(tmp_percent, 10) == 0 then
+        if ~(tmp_percent == percent) then
+            sca(handles.prevHideImage);
+            imshow(resultImage);
             percent = tmp_percent;
-           printf("Step 3/3 - Rebuilding Image: %d percent\n", percent);
+            if modulo(tmp_percent, 10) == 0 then
+                printf("Step 3/3 - Rebuilding Image: %d percent\n", percent);
+            end
         end
         //printf("%d/%d\n",oneDimCoord,hideWidth*hideHeight);
 
        //for layer=1 : 3
-       resPix = findPix(((oneDimCoord-1)*3)+1);
+       resPix = findPix(((oneDimCoord-1)*3)+1, listRedHideImage, listGreenHideImage, listBlueHideImage);
        y = ceil(oneDimCoord / hideWidth);
        x = oneDimCoord - ((y - 1) * hideWidth);
        resultImage(y, x, 1) = resPix(1);
        resultImage(y, x, 2) = resPix(2);
        resultImage(y, x, 3) = resPix(3);
+       //disp(resPix)
        //end
+
     end
 
 
@@ -657,12 +672,12 @@ endfunction
 function retStruct = check_header(x, y, listHeadersHeight, listHeadersWidth, indexHeader, listCoordHeadersStart)
     //disp("bonjour\n");
     //printf("check args %d:%d %d\n", x, y, indexHeader)
-   for headerSize=1 : size(listHeadersHeight(indexHeader))-1
+   for headerSize=1 : size(listHeadersHeight(indexHeader))
      strHeaderHeight = strHeaderHeight + string(listHeadersHeight(indexHeader)(headerSize))
    end
    numHeaderHeight = bin2dec(strHeaderHeight);
 
-   for headerSize=1 : size(listHeadersWidth(indexHeader))-1
+   for headerSize=1 : size(listHeadersWidth(indexHeader))
      strHeaderWidth = strHeaderWidth + string(listHeadersWidth(indexHeader)(headerSize))
    end
    numHeaderWidth = bin2dec(strHeaderWidth);
@@ -764,7 +779,6 @@ function listStartImages = getListStartImages(coord)
     end
 
     listStartImages = resume(listStartImages);
-
 endfunction
 
 function strETA = eta2string(eta)
@@ -802,18 +816,28 @@ function strETA = eta2string(eta)
    strETA = strETA + string(eta) + sETAString
 endfunction
 
-function pix = findPix(index)
+function pix = findPix(index, listRedHideImage, listGreenHideImage, listBlueHideImage)
     pix = list(0, 0, 0);
-    for bitIndex=index : index+3
-        for nbImage=1 : size(listRedHideImage(1))-1
-            rOne = 0;
-            rZero = 0;
-            gOne = 0;
-            gZero = 0;
-            bOne = 0;
-            bZero = 0;
+    for bitIndex=index : index+2
+        //if index < 10 then
+        //   printf("index = %d bit index = %d\n", index, bitIndex);
+        //end
+        //if index > 12280 then
+        //   printf("bit index = %d\n", bitIndex);
+        //end
 
-            for comp=nbImage+1 : 2 : size(listRedHideImage(1))
+        rOne = 0;
+        rZero = 0;
+        gOne = 0;
+        gZero = 0;
+        bOne = 0;
+        bZero = 0;
+        for nbImage=1 : 2 : size(listRedHideImage(bitIndex))
+            for comp=2 : 2 : size(listRedHideImage(bitIndex))
+                //if index < 10 then
+                //   printf("size list(bitIndex) = %d ", size(listRedHideImage(bitIndex)))
+                //   printf("nbImage = %d comp = %d \n", nbImage, comp);
+                //end
                 if bitxor(listRedHideImage(bitIndex)(nbImage), listRedHideImage(bitIndex)(comp)) then
                    if listRedHideImage(bitIndex)(nbImage) == 1 then
                       rOne = rOne + 1;
@@ -836,71 +860,77 @@ function pix = findPix(index)
                    end
                 end
             end
+        end
+        //printf("rOne = %d; rZero = %d; gOne = %d; gZero = %d; bOne = %d; bZero = %d;\n",rOne, rZero, gOne, gZero, bOne, bZero);
 
-            if ~(rOne == rZero) then
-               if rOne > rZero then
-                   pix(1) = pix(1) + 2^(9-bitIndex);
-               end
-            else
-                sumBit = 0;
-                for it=1 : size(listRedHideImage(bitIndex))
-                    if modulo(it, 2) == 0 then
-                       if ~(listRedHideImage(bitIndex)(it)) then
-                          sumBit = sumBit + 1;
-                       else
-                           sumBit = sumBit + 0;
-                       end
-                    else
-                       sumBit = sumBit + listRedHideImage(bitIndex)(it);
-                    end
-                end
-                if round(sumBit/size(listRedHideImage(bitIndex))) == 1 then
-                   pix(1) = pix(1) + 2^(9-bitIndex);
+        if ~(rOne == rZero) then
+           if rOne > rZero then
+               pix(1) = pix(1) + (2^(8-(bitIndex - index + 1)));
+               //printf("add red %d %d\n", pix(1), (2^(8-bitIndex)))
+           end
+        else
+            //printf("moyenne\n")
+            sumBit = 0;
+            for it=1 : size(listRedHideImage(bitIndex))
+                if modulo(it, 2) == 0 then
+                   if ~(listRedHideImage(bitIndex)(it)) then
+                      sumBit = sumBit + 1;
+                   else
+                       sumBit = sumBit + 0;
+                   end
+                else
+                   sumBit = sumBit + listRedHideImage(bitIndex)(it);
                 end
             end
-            if ~(gOne == gZero) then
-               if gOne > gZero then
-                   pix(2) = pix(2) + 2^(9-bitIndex);
-               end
-            else
-                sumBit = 0;
-                for it=1 : size(listGreenHideImage(bitIndex))
-                    if modulo(it, 2) == 0 then
-                       if ~(listGreenHideImage(bitIndex)(it)) then
-                          sumBit = sumBit + 1;
-                       else
-                           sumBit = sumBit + 0;
-                       end
-                    else
-                       sumBit = sumBit + listGreenHideImage(bitIndex)(it);
-                    end
-                end
-                if round(sumBit/size(listGreenHideImage(bitIndex))) == 1 then
-                   pix(2) = pix(2) + 2^(9-bitIndex);
+            if round(sumBit/size(listRedHideImage(bitIndex))) == 1 then
+               pix(1) = pix(1) + 2^(8-(bitIndex - index + 1));
+            end
+        end
+        if ~(gOne == gZero) then
+           if gOne > gZero then
+               pix(2) = pix(2) + 2^(8-(bitIndex - index + 1));
+           end
+        else
+            //printf("moyenne\n")
+            sumBit = 0;
+            for it=1 : size(listGreenHideImage(bitIndex))
+                if modulo(it, 2) == 0 then
+                   if ~(listGreenHideImage(bitIndex)(it)) then
+                      sumBit = sumBit + 1;
+                   else
+                       sumBit = sumBit + 0;
+                   end
+                else
+                   sumBit = sumBit + listGreenHideImage(bitIndex)(it);
                 end
             end
-            if ~(bOne == bZero) then
-               if bOne > bZero then
-                   pix(3) = pix(3) + 2^(9-bitIndex);
-               end
-            else
-                sumBit = 0;
-                for it=1 : size(listBlueHideImage(bitIndex))
-                    if modulo(it, 2) == 0 then
-                       if ~(listBlueHideImage(bitIndex)(it)) then
-                          sumBit = sumBit + 1;
-                       else
-                           sumBit = sumBit + 0;
-                       end
-                    else
-                       sumBit = sumBit + listBlueHideImage(bitIndex)(it);
-                    end
+            if round(sumBit/size(listGreenHideImage(bitIndex))) == 1 then
+               pix(2) = pix(2) + 2^(8-(bitIndex - index + 1));
+            end
+        end
+        if ~(bOne == bZero) then
+           if bOne > bZero then
+               pix(3) = pix(3) + 2^(8-(bitIndex - index + 1));
+           end
+        else
+            //printf("moyenne\n")
+            sumBit = 0;
+            for it=1 : size(listBlueHideImage(bitIndex))
+                if modulo(it, 2) == 0 then
+                   if ~(listBlueHideImage(bitIndex)(it)) then
+                      sumBit = sumBit + 1;
+                   else
+                       sumBit = sumBit + 0;
+                   end
+                else
+                   sumBit = sumBit + listBlueHideImage(bitIndex)(it);
                 end
-                if round(sumBit/size(listBlueHideImage(bitIndex))) == 1 then
-                   pix(3) = pix(3) + 2^(9-bitIndex);
-                end
+            end
+            if round(sumBit/size(listBlueHideImage(bitIndex))) == 1 then
+               pix(3) = pix(3) + 2^(8-(bitIndex - index + 1));
             end
         end
     end
+    //printf("pix(1) = %d pix(2) = %d pix(3) = %d\n", pix(1), pix(2), pix(3))
     pix = resume(pix);
 endfunction
