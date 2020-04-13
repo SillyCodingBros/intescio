@@ -30,19 +30,19 @@ function[resultImage] = hideImage(imageHost,imageHide)
        coef = 1;
     end
 
+    resultImage = imresize(imageHost,coef);
+    heightResultImage = size(resultImage,1);
+    widthResultImage = size(resultImage,2);
+
     if widthHost < heightHost then
-       headerSize = length(dec2bin(heightHost));
+       headerSize = length(dec2bin(heightResultImage));
     else
-       headerSize = length(dec2bin(widthHost));
+       headerSize = length(dec2bin(widthResultImage));
     end
 
     isHeader = %t;
     bitHeader = headerSize;
     indexImageHide = 1;
-
-    resultImage = imresize(imageHost,coef);
-    heightResultImage = size(resultImage,1);
-    widthResultImage = size(resultImage,2);
 
     // Waitbar
     percent = 0;
