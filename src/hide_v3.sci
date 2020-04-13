@@ -35,7 +35,7 @@ function[resultImage] = hideImage(imageHost,imageHide)
     end
 
     isHeader = %t;
-    bitHeader = 1;
+    bitHeader = headerSize;
     indexImageHide = 1;
 
     resultImage = imageHost
@@ -83,12 +83,12 @@ function[resultImage] = hideImage(imageHost,imageHide)
             if ~isHeader then
                 /*if nbImage > 0 then*/
                    for layer=1 : size(resultImage,3)
-                       if layer <= size(imageHide,3) then
+                       if layer <= size(image2Hide,3) then
                            //resultImage(y,x,layer) = bitset(resultImage(y,x,layer), bit, bitget(imageHide(ceil(indexImageHide/widthHide),modulo(indexImageHide-1,widthHide)+1,layer),9-bit))
                            //if layer == 1 then
                             //printf("%d <-- %d\n", resultImage(y,x,layer), imageHide(ceil(indexImageHide/widthHide),modulo(indexImageHide-1,widthHide)+1,layer))
                            //end
-                           resultImage(y,x,layer) = hiding_val(resultImage(y,x,layer), imageHide(ceil(indexImageHide/widthHide),modulo(indexImageHide-1,widthHide)+1,layer), nbLSB);
+                           resultImage(y,x,layer) = hiding_val(resultImage(y,x,layer), image2Hide(ceil(indexImageHide/widthHide),modulo(indexImageHide-1,widthHide)+1,layer), nbLSB);
                            //if layer == 1 then
                             //printf("res = %d\n", resultImage(y,x,layer))
                            //end
@@ -126,15 +126,15 @@ function[resultImage] = hideImage(imageHost,imageHide)
                         //        resultImage(y,x,layer) = bitset(resultImage(y,x,layer),bit,0)
                         //    end
                         //else
-                            resultImage(y,x,1) = bitset(resultImage(y,x,1), bit, bitget(heightHide,(headerSize+1)-bitHeader));
-                            resultImage(y,x,2) = bitset(resultImage(y,x,2), bit, bitget(widthHide,(headerSize+1)-bitHeader));
+                            resultImage(y,x,1) = bitset(resultImage(y,x,1), bit, bitget(heightHide,bitHeader));
+                            resultImage(y,x,2) = bitset(resultImage(y,x,2), bit, bitget(widthHide,-bitHeader));
                             //printf("\n%d:%d - ",x,y)
                             //printf("bitheader = %d - ", bitHeader)
                             //printf("bitget = %d", bitget(heightHide,33-bitHeader))
-                            bitHeader = bitHeader+1;
-                            if bitHeader > headerSize then
+                            bitHeader = bitHeader-1;
+                            if bitHeader < 1 then
                                 //printf("\n%d %d header = %d\n", x, y, resultImage(y,x,1))
-                                bitHeader = 1;
+                                bitHeader = headerSize;
                                 isHeader = %f;
                                 break;
                             end
