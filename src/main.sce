@@ -165,7 +165,6 @@ end
 handles = resume(handles);
 endfunction
 
-
 function loadImage2Button_callback(handles)
 //Write your callback for  loadImage2Button  here
 fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], 'C:\Users\Thomas\Documents\Scilab\img', "Choose a file");
