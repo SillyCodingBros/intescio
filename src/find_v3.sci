@@ -752,7 +752,9 @@ function listStartImages = getListStartImages(coord)
     while %t
         indexList = indexList + 1;
         oneDimImageStart = oneDimCoord - (octSize/(nbLSB-1)) - (hideWidth * hideHeight);
-        if (oneDimCoord - (octSize/(nbLSB-1)) - 1) > 0 then
+        //if (oneDimCoord - (octSize/(nbLSB-1)) - 1) > 0 then
+        if oneDimImageStart > 0 then
+
             oneDimCoord = oneDimImageStart;
         else
             indexList = indexList - 1;
