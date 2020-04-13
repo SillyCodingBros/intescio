@@ -38,13 +38,14 @@ function[resultImage] = findImage(imageHost)
     svg = 0
 
     continue_choice = %t;
-
+/*
     if widthHost < heightHost then
        headerSize = length(dec2bin(heightHost));
     else
        headerSize = length(dec2bin(widthHost));
     end
-
+*/
+    headerSize = 16;
     octSize = ceil(headerSize/(nbLSB-1)) * (nbLSB-1);
 
     lastHeaderX = 0;
