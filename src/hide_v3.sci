@@ -42,10 +42,12 @@ function[resultImage] = hideImage(imageHost,imageHide)
 
     header = [uint32(widthHide),uint32(heightHide)];
 
-    coef = ceil(sqrt((heightHide*widthHide)*(widthHost/heightHost)))/widthHost*3;
+    n = 2;
+    coef = sqrt((n*(widthHide*heightHide))/(heightHost*widthHost));
     if coef < 1 then
        coef = 1;
     end
+    //printf("debug coeff = %d\n",coef);
 
     resultImage = imresize(imageHost,coef);
     if size(resultImage,3) == 4 then
