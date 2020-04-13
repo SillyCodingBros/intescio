@@ -33,12 +33,14 @@ function[resultImage] = hideImage(imageHost,imageHide)
     resultImage = imresize(imageHost,coef);
     heightResultImage = size(resultImage,1);
     widthResultImage = size(resultImage,2);
-
+/*
     if widthHost < heightHost then
        headerSize = length(dec2bin(heightResultImage));
     else
        headerSize = length(dec2bin(widthResultImage));
     end
+*/
+    headerSize = 16;
 
     isHeader = %t;
     bitHeader = headerSize;
