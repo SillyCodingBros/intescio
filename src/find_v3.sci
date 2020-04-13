@@ -838,21 +838,24 @@ function pix = findPix(index, listRedHideImage, listGreenHideImage, listBlueHide
                 //   printf("size list(bitIndex) = %d ", size(listRedHideImage(bitIndex)))
                 //   printf("nbImage = %d comp = %d \n", nbImage, comp);
                 //end
-                if bitxor(listRedHideImage(bitIndex)(nbImage), listRedHideImage(bitIndex)(comp)) then
+                if ~(listRedHideImage(bitIndex)(nbImage) == listRedHideImage(bitIndex)(comp)) then
+                //if bitxor(listRedHideImage(bitIndex)(nbImage), listRedHideImage(bitIndex)(comp)) then
                    if listRedHideImage(bitIndex)(nbImage) == 1 then
                       rOne = rOne + 1;
                    else
                       rZero = rZero + 1;
                    end
                 end
-                if bitxor(listGreenHideImage(bitIndex)(nbImage), listGreenHideImage(bitIndex)(comp)) then
+                if ~(listGreenHideImage(bitIndex)(nbImage) == listGreenHideImage(bitIndex)(comp)) then
+                //if bitxor(listGreenHideImage(bitIndex)(nbImage), listGreenHideImage(bitIndex)(comp)) then
                    if listGreenHideImage(bitIndex)(nbImage) == 1 then
                       gOne = gOne + 1;
                    else
                       gZero = gZero + 1;
                    end
                 end
-                if bitxor(listBlueHideImage(bitIndex)(nbImage), listBlueHideImage(bitIndex)(comp)) then
+                if ~(listBlueHideImage(bitIndex)(nbImage) == listBlueHideImage(bitIndex)(comp)) then
+                //if bitxor(listBlueHideImage(bitIndex)(nbImage), listBlueHideImage(bitIndex)(comp)) then
                    if listBlueHideImage(bitIndex)(nbImage) == 1 then
                       bOne = bOne + 1;
                    else
