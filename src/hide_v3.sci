@@ -25,10 +25,6 @@ function[resultImage] = hideImage(imageHost,imageHide)
 
     header = [uint32(widthHide),uint32(heightHide)];
 
-    isHeader = %t;
-    bitHeader = headerSize;
-    indexImageHide = 1;
-
     coef = ceil(sqrt((heightHide*widthHide)*(widthHost/heightHost)))/widthHost*3;
     if coef < 1 then
        coef = 1;
@@ -39,6 +35,10 @@ function[resultImage] = hideImage(imageHost,imageHide)
     else
        headerSize = length(dec2bin(widthHost));
     end
+
+    isHeader = %t;
+    bitHeader = headerSize;
+    indexImageHide = 1;
 
     resultImage = imresize(imageHost,coef);
     heightResultImage = size(resultImage,1);
