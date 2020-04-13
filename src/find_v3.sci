@@ -901,5 +901,5 @@ function retPix = findPix(index)
             end
         end
     end
-
+    pix = resume(pix);
 endfunction
