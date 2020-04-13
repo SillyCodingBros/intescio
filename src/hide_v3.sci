@@ -97,6 +97,7 @@ function[resultImage] = hideImage(imageHost,imageHide)
                 indexImageHide = indexImageHide+1;
                 if indexImageHide > widthHide*heightHide then
                     indexImageHide = 1;
+                    isHeader = %t;
                     if isInvert then
                        isInvert = %f
                        image2Hide = imageHide;
