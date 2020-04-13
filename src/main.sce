@@ -74,6 +74,12 @@ handles.f_goHome=uicontrol(mainFigure,'unit','normalized','BackgroundColor',[-1,
 // Waitbar
 //handles.waitbar = waitbar(0.5, "Waitbar Test");
 // Activate Window
+handles.codePath = home;
+handles.imagesPath = home;
+handles.savesFile = home;
+handles.codePath = uigetdir(home, "Choose Code Directory");
+handles.imagesPath = uigetdir(home, "Choose Images Directory");
+handles.savesFile = uigetdir(home, "Choose Saves Directory");
 mainFigure.visible = 'on';
 
 //////////
@@ -138,7 +144,8 @@ endfunction
 
 function loadImage1Button_callback(handles)
 //Write your callback for  loadImage1Button  here
-fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], 'C:\Users\Thomas\Documents\Scilab\img', "Choose a file");
+fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], handles.imagesPath, "Choose a file");
+//fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], 'C:\Users\Thomas\Documents\Scilab\img', "Choose a file");
 //fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], 'C:\Users\bobbywan\Images', "Choose a file");
 hostImage = imread(fn);
 sca(handles.image1);
@@ -167,7 +174,8 @@ endfunction
 
 function loadImage2Button_callback(handles)
 //Write your callback for  loadImage2Button  here
-fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], 'C:\Users\Thomas\Documents\Scilab\img', "Choose a file");
+fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], handles.imagesPath, "Choose a file");
+//fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], 'C:\Users\Thomas\Documents\Scilab\img', "Choose a file");
 //fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], 'C:\Users\bobbywan\Images', "Choose a file");
 hideImage = imread(fn);
 sca(handles.image2);
@@ -220,7 +228,8 @@ function hideDataButton_callback(handles)
 //Write your callback for  hideDataButton  here
 handles.hideDataButton.Enable = 'off';
 //printf("host image = %d %d",size(handles.hostImage,1),size(handles.hostImage,2));
-exec('C:\Users\Thomas\Documents\Scilab\intescio\src\hide_v3.sci', -1);
+exec(handles.codePath+'hide_v3.sci', -1);
+//exec('C:\Users\Thomas\Documents\Scilab\intescio\src\hide_v3.sci', -1);
 //exec('C:\Users\bobbywan\dev\scilab\intescio\src\hide_v2.sci', -1)
 handles.resultHideImage = hideImage(handles.hostImage, handles.hideImage);
 sca(handles.resultImage);
@@ -235,7 +244,8 @@ endfunction
 
 function saveResultButton_callback(handles)
 //Write your callback for  saveResultButton  here
-fn = uiputfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";],'C:\Users\Thomas\Documents\Scilab\img\results', "Choose a file name");
+fn = uiputfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], handles.savesFile, "Choose a file name");
+//fn = uiputfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";],'C:\Users\Thomas\Documents\Scilab\img\results', "Choose a file name");
 //fn = uiputfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";],'C:\Users\bobbywan\Images', "Choose a file name");
 ext = list(".bmp", ".dib", ".jpeg", ".jpg", ".jpe", ".png", ".pbm", ".pgm", ".ppm", ".sr", ".ras", ".tiff", ".tif");
 for x=1 : size(ext)
@@ -306,8 +316,8 @@ endfunction
 
 function loadHostImageButton_callback(handles)
 //Write your callback for  loadImageButton  here
-
-fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], 'C:\Users\Thomas\Documents\Scilab\img\results', "Choose a file");
+fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], handles.savesFile, "Choose a file");
+//fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], 'C:\Users\Thomas\Documents\Scilab\img\results', "Choose a file");
 //fn = uigetfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], 'C:\Users\bobbywan\Images', "Choose a file");
 
 hostImage2Find = imread(fn);
@@ -330,7 +340,8 @@ function findDataButton_callback(handles)
 handles.findDataButton.Enable = 'off';
 handles.saveHideImageButton.Enable = 'off';
 
-exec('C:\Users\Thomas\Documents\Scilab\intescio\src\find_v3.sci', -1);
+exec(handles.codePath+'find_v3.sci', -1);
+//exec('C:\Users\Thomas\Documents\Scilab\intescio\src\find_v3.sci', -1);
 //exec('C:\Users\bobbywan\dev\scilab\intescio\src\find_v2.sci', -1)
 handles.resultFindImage = findImage(handles.hostImage2Find);
 sca(handles.prevHideImage);
@@ -341,7 +352,8 @@ endfunction
 
 function saveHideImageButton_callback(handles)
 //Write your callback for  saveResultButton  here
-fn = uiputfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";],'C:\Users\Thomas\Documents\Scilab\img\results', "Choose a file name");
+fn = uiputfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";], handles.savesFile, "Choose a file name");
+//fn = uiputfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";],'C:\Users\Thomas\Documents\Scilab\img\results', "Choose a file name");
 //fn = uiputfile(["*.bmp|*.dib|*.jpeg|*.jpg|*.jpe|*.png|*.pbm|*.pgm|*.ppm|*.sr|*.ras|*.tiff|*.tif", "Image Files";],'C:\Users\bobbywan\Images', "Choose a file name");
 ext = list(".bmp", ".dib", ".jpeg", ".jpg", ".jpe", ".png", ".pbm", ".pgm", ".ppm", ".sr", ".ras", ".tiff", ".tif");
 for x=1 : size(ext)
