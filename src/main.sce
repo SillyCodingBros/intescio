@@ -107,6 +107,7 @@ handles.loadImage2Button.visible = 'on';
 handles.hideDataButton.visible = 'on';
 handles.saveResultButton.visible = 'on';
 handles.h_goHome.visible = 'on';
+handles = resume(handles);
 endfunction
 
 
@@ -127,6 +128,7 @@ handles.f_goHome.visible = 'on';
 //handles.f_imageRedundancySpin.visible = 'on';
 //handles.f_leastSignificantBitsText.visible = 'on';
 //handles.f_LSBUsedSpin.visible = 'on';
+handles = resume(handles);
 endfunction
 
 
@@ -248,6 +250,7 @@ end
 fn = fn + ".png";
 disp(fn);
 imwrite(handles.resultHideImage, fn);
+handles = resume(handles);
 endfunction
 
 
@@ -294,6 +297,7 @@ handles.h_goHome.visible = 'off';
 handles.title.visible = 'on';
 handles.goToHideImage.visible = 'on';
 handles.goToFindImage.visible = 'on';
+handles = resume(handles);
 endfunction
 
 
@@ -352,6 +356,7 @@ end
 fn = fn + ".png";
 disp(fn);
 imwrite(handles.resultFindImage, fn);
+handles = resume(handles);
 endfunction
 
 function f_goHome_callback(handles)
@@ -385,4 +390,5 @@ handles.f_goHome.visible = 'off';
 handles.title.visible = 'on';
 handles.goToHideImage.visible = 'on';
 handles.goToFindImage.visible = 'on';
+handles = resume(handles);
 endfunction
