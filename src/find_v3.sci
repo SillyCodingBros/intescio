@@ -479,7 +479,7 @@ function[resultImage] = findImage(imageHost)
     for oneDimCoord=1 : hideWidth*hideHeight
         //timer
 
-        tmp_percent = floor(oneDimCoord*100/hideHeight);
+        tmp_percent = floor(oneDimCoord*100/(hideWidth*hideHeight));
         if ~(svg == tmp_percent) then
             time = timer();
             eta = floor((time/(tmp_percent-svg))*(100-tmp_percent))
@@ -492,6 +492,7 @@ function[resultImage] = findImage(imageHost)
             percent = tmp_percent;
            printf("Step 3/3 - Rebuilding Image: %d percent\n", percent);
         end
+        //printf("%d/%d\n",oneDimCoord,hideWidth*hideHeight);
 
        //for layer=1 : 3
        resPix = findPix(((oneDimCoord-1)*3)+1);
