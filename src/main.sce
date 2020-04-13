@@ -228,7 +228,7 @@ function hideDataButton_callback(handles)
 //Write your callback for  hideDataButton  here
 handles.hideDataButton.Enable = 'off';
 //printf("host image = %d %d",size(handles.hostImage,1),size(handles.hostImage,2));
-exec(handles.codePath+'hide_v3.sci', -1);
+exec(handles.codePath+'/hide_v3.sci', -1);
 //exec('C:\Users\Thomas\Documents\Scilab\intescio\src\hide_v3.sci', -1);
 //exec('C:\Users\bobbywan\dev\scilab\intescio\src\hide_v2.sci', -1)
 handles.resultHideImage = hideImage(handles.hostImage, handles.hideImage);
@@ -340,7 +340,7 @@ function findDataButton_callback(handles)
 handles.findDataButton.Enable = 'off';
 handles.saveHideImageButton.Enable = 'off';
 
-exec(handles.codePath+'find_v3.sci', -1);
+exec(handles.codePath+'/find_v3.sci', -1);
 //exec('C:\Users\Thomas\Documents\Scilab\intescio\src\find_v3.sci', -1);
 //exec('C:\Users\bobbywan\dev\scilab\intescio\src\find_v2.sci', -1)
 handles.resultFindImage = findImage(handles.hostImage2Find);
