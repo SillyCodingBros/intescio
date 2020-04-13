@@ -672,13 +672,17 @@ endfunction
 function retStruct = check_header(x, y, listHeadersHeight, listHeadersWidth, indexHeader, listCoordHeadersStart)
     //disp("bonjour\n");
     //printf("check args %d:%d %d\n", x, y, indexHeader)
-   for headerSize=1 : size(listHeadersHeight(indexHeader))-(octSize-headerSize)
-     strHeaderHeight = strHeaderHeight + string(listHeadersHeight(indexHeader)(headerSize))
+    //disp(size(listHeadersHeight))
+    //disp(size(listHeadersWidth))
+    //printf("end 1 = %d end 2 = %d\n", size(listHeadersHeight(indexHeader))-(octSize-headerSize), size(listHeadersWidth(indexHeader))-(octSize-headerSize))
+
+   for headerIndex=1 : size(listHeadersHeight(indexHeader))-(octSize-headerSize)
+     strHeaderHeight = strHeaderHeight + string(listHeadersHeight(indexHeader)(headerIndex))
    end
    numHeaderHeight = bin2dec(strHeaderHeight);
 
-   for headerSize=1 : size(listHeadersWidth(indexHeader))-(octSize-headerSize)
-     strHeaderWidth = strHeaderWidth + string(listHeadersWidth(indexHeader)(headerSize))
+   for headerIndex=1 : size(listHeadersWidth(indexHeader))-(octSize-headerSize)
+     strHeaderWidth = strHeaderWidth + string(listHeadersWidth(indexHeader)(headerIndex))
    end
    numHeaderWidth = bin2dec(strHeaderWidth);
 
