@@ -801,7 +801,7 @@ function strETA = eta2string(eta)
    strETA = strETA + string(eta) + sETAString
 endfunction
 
-function retPix = findPix(index)
+function pix = findPix(index)
     pix = list(0, 0, 0);
     for bitIndex=index : index+3
         for nbImage=1 : size(listRedHideImage(1))-1
@@ -853,7 +853,7 @@ function retPix = findPix(index)
                        sumBit = sumBit + listRedHideImage(bitIndex)(it);
                     end
                 end
-                if arround(sumBit/size(listRedHideImage(bitIndex))) == 1 then
+                if round(sumBit/size(listRedHideImage(bitIndex))) == 1 then
                    pix(1) = pix(1) + 2^(9-bitIndex);
                 end
             end
@@ -874,7 +874,7 @@ function retPix = findPix(index)
                        sumBit = sumBit + listGreenHideImage(bitIndex)(it);
                     end
                 end
-                if arround(sumBit/size(listGreenHideImage(bitIndex))) == 1 then
+                if round(sumBit/size(listGreenHideImage(bitIndex))) == 1 then
                    pix(2) = pix(2) + 2^(9-bitIndex);
                 end
             end
@@ -895,7 +895,7 @@ function retPix = findPix(index)
                        sumBit = sumBit + listBlueHideImage(bitIndex)(it);
                     end
                 end
-                if arround(sumBit/size(listBlueHideImage(bitIndex))) == 1 then
+                if round(sumBit/size(listBlueHideImage(bitIndex))) == 1 then
                    pix(3) = pix(3) + 2^(9-bitIndex);
                 end
             end
